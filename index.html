@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VORTEX STREETWEAR | Sokak Modası & Kış Koleksiyonu</title>
+  
+  <!-- Tarayıcı Sekme Logosu (Favicon) -->
+  <link rel="icon" type="image/png" href="resimler/logo.png">
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Google Sign-In SDK -->
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#fffbeb',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+            }
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- Bildirim Toast Alanı -->
+  <div id="toastNotification" class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 bg-slate-900 border border-amber-500 text-slate-100 px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-3 opacity-0 pointer-events-none transition-all duration-500">
+    <i data-lucide="check-circle" class="w-6 h-6 text-amber-400 shrink-0"></i>
+    <span id="toastText" class="text-sm font-bold">Ürün sepete eklendi!</span>
+  </div>
+
+  <!-- Üst Duyuru Bandı -->
+  <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-slate-950 text-xs font-bold py-2 text-center tracking-wider uppercase">
+    ⚡ TÜM SİPARİŞLERDE ÜCRETSİZ KARGO & KAPIYA KADAR TESLİMAT!
+  </div>
+
+  <!-- Header / Navigasyon -->
+  <header class="sticky top-0 z-40 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/80">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
+      
+      <!-- Marka Logo -->
+      <a href="#" onclick="showMainView(); return false;" class="flex items-center gap-2 group cursor-pointer">
+        <div class="w-10 h-10 rounded-xl bg-amber-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-amber-500/20 group-hover:scale-105 transition-transform">
+          V
+        </div>
+        <div class="flex flex-col">
+          <span class="font-extrabold text-lg sm:text-xl tracking-wider text-slate-100 leading-none">VORTEX</span>
+          <span class="text-[10px] font-bold tracking-[0.25em] text-amber-500 uppercase">STREETWEAR</span>
+        </div>
+      </a>
+
+      <!-- Cinsiyet Navigasyon Tabları -->
+      <nav class="hidden md:flex items-center bg-slate-900 border border-slate-800 p-1 rounded-full text-xs font-bold">
+        <button id="nav-gen-Tümü" onclick="selectGenderNav('Tümü')" class="px-5 py-2 rounded-full transition-all bg-amber-500 text-slate-950 shadow-md cursor-pointer">TÜM KOLEKSİYON</button>
+        <button id="nav-gen-Erkek" onclick="selectGenderNav('Erkek')" class="px-5 py-2 rounded-full text-slate-400 hover:text-slate-100 transition-all cursor-pointer">ERKEK</button>
+        <button id="nav-gen-Kadın" onclick="selectGenderNav('Kadın')" class="px-5 py-2 rounded-full text-slate-400 hover:text-slate-100 transition-all cursor-pointer">KADIN</button>
+        <button id="nav-gen-Unisex" onclick="selectGenderNav('Unisex')" class="px-5 py-2 rounded-full text-slate-400 hover:text-slate-100 transition-all cursor-pointer">UNISEX</button>
+      </nav>
+
+      <!-- Arama, Hesap & Sepet -->
+      <div class="flex items-center gap-3">
+        <div class="relative hidden sm:block w-40 lg:w-56">
+          <i data-lucide="search" class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+          <input type="text" id="searchInput" placeholder="Ürün ara..." class="w-full bg-slate-900 border border-slate-800 rounded-full pl-10 pr-4 py-2 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-amber-500 transition-colors">
+        </div>
+
+        <!-- Hesap Alanı & Dropdown Menü -->
+        <div class="relative">
+          <button type="button" onclick="handleAccountBtnClick()" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 px-3.5 py-2.5 rounded-full flex items-center gap-2 transition-colors cursor-pointer text-xs font-bold">
+            <i data-lucide="user" class="w-4 h-4 text-amber-400"></i>
+            <span id="accountBtnText" class="hidden sm:inline">Giriş Yap</span>
+          </button>
+
+          <!-- Açılır Profil Menüsü -->
+          <div id="accountDropdown" class="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl py-2 hidden z-50">
+            <button type="button" onclick="openProfileModal()" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-300 hover:bg-slate-800 flex items-center gap-2.5 cursor-pointer">
+              <i data-lucide="user-cog" class="w-4 h-4 text-amber-400"></i> Kullanıcı Bilgilerim
+            </button>
+            <button type="button" onclick="openAddressModalMain()" class="w-full px-4 py-2.5 text-left text-xs font-bold text-slate-300 hover:bg-slate-800 flex items-center gap-2.5 cursor-pointer">
+              <i data-lucide="map-pin" class="w-4 h-4 text-amber-400"></i> Adres Bilgilerim
+            </button>
+            <div class="border-t border-slate-800 my-1"></div>
+            <button type="button" onclick="logoutUser()" class="w-full px-4 py-2.5 text-left text-xs font-bold text-rose-400 hover:bg-slate-800 flex items-center gap-2.5 cursor-pointer">
+              <i data-lucide="log-out" class="w-4 h-4"></i> Çıkış Yap
+            </button>
+          </div>
+        </div>
+
+        <!-- Sepet Butonu -->
+        <button type="button" onclick="showCartView()" class="relative bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-200 px-4 py-2.5 rounded-full flex items-center gap-2.5 transition-colors cursor-pointer">
+          <i data-lucide="shopping-bag" class="w-5 h-5 text-amber-400"></i>
+          <span class="font-bold text-sm hidden sm:inline">Sepetim</span>
+          <span id="cartBadge" class="bg-amber-500 text-slate-950 text-xs font-black px-2 py-0.5 rounded-full min-w-[20px] text-center">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ANA GÖRÜNÜM -->
+  <div id="mainView">
+    <section class="relative overflow-hidden bg-slate-900/40 border-b border-slate-800/60 py-10 sm:py-16 px-4">
+      <div class="max-w-7xl mx-auto text-center relative z-10">
+        <span class="inline-block px-3 py-1 bg-amber-500/10 border border-amber-500/20 text-amber-400 font-semibold text-xs rounded-full uppercase tracking-widest mb-3">2026 KIŞ KOLEKSİYONU</span>
+        <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-slate-100 mb-3">TARZINI SOKAĞA YANSIT</h1>
+        <p class="max-w-xl mx-auto text-slate-400 text-xs sm:text-sm mb-6">Ağır gramajlı kumaşlar, oversized kesimler ve maksimum kış konforu.</p>
+        <div id="categoryFilters" class="flex flex-wrap items-center justify-center gap-2"></div>
+      </div>
+    </section>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
+    </main>
+  </div>
+
+  <!-- SEPET SAYFASI GÖRÜNÜMÜ -->
+  <div id="cartView" class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 hidden">
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-800">
+      <div class="flex items-center gap-3">
+        <i data-lucide="shopping-bag" class="w-7 h-7 text-amber-400"></i>
+        <h2 class="text-2xl sm:text-3xl font-black text-slate-100">Alışveriş Sepetim</h2>
+      </div>
+      <button type="button" onclick="showMainView()" class="text-xs font-bold text-amber-400 hover:underline flex items-center gap-1.5 cursor-pointer bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Alışverişe Devam Et
+      </button>
+    </div>
+
+    <div id="shippingBanner" class="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold py-3 px-5 rounded-2xl mb-6 flex items-center gap-2">
+      <i data-lucide="truck" class="w-5 h-5 shrink-0"></i>
+      <span id="shippingText">Kargo Bedava kampanyasına kalan tutar hesaplanıyor...</span>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+      <div class="lg:col-span-2 space-y-4" id="cartItemsPage"></div>
+
+      <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 sticky top-28">
+        <h3 class="text-lg font-black text-slate-100 pb-3 border-b border-slate-800">Sipariş Özeti</h3>
+        
+        <div>
+          <label class="block text-xs font-bold text-amber-400 uppercase tracking-wider mb-3">ÖDEME YÖNTEMİ SEÇİN:</label>
+          <div class="space-y-2.5">
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-amber-500">
+              <input type="radio" name="paymentMethod" value="cc" checked class="text-amber-500">
+              <span class="text-xs font-bold text-slate-200">Kredi Kartı / Banka Kartı (PayTR)</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-amber-500">
+              <input type="radio" name="paymentMethod" value="cod" class="text-amber-500">
+              <span class="text-xs font-bold text-slate-200">Kapıda Ödeme (+49 TL)</span>
+            </label>
+            <label class="flex items-center gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer hover:border-amber-500">
+              <input type="radio" name="paymentMethod" value="whatsapp" class="text-amber-500">
+              <span class="text-xs font-bold text-slate-200">WhatsApp ile / IBAN Ödeme</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="flex items-center justify-between pt-2">
+          <span class="text-slate-400 font-medium text-sm">Toplam Tutar:</span>
+          <span id="cartTotalPage" class="text-2xl font-black text-amber-400">0 ₺</span>
+        </div>
+
+        <button type="button" onclick="completeCheckout()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-4 rounded-2xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 text-base cursor-pointer">
+          <i data-lucide="check-circle" class="w-5 h-5"></i> Siparişi Onayla ve Tamamla
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- GİRİŞ YAP / KAYIT OL MODALI -->
+  <div id="authModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-md w-full relative shadow-2xl">
+      <button type="button" onclick="toggleAuthModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      
+      <div class="flex border-b border-slate-800 mb-6">
+        <button id="tabLoginBtn" onclick="switchAuthTab('login')" class="flex-1 pb-3 font-extrabold text-sm text-amber-400 border-b-2 border-amber-500 cursor-pointer">Giriş Yap</button>
+        <button id="tabRegisterBtn" onclick="switchAuthTab('register')" class="flex-1 pb-3 font-extrabold text-sm text-slate-400 border-b-2 border-transparent cursor-pointer">Kayıt Ol</button>
+      </div>
+
+      <div id="googleSignInBtn" class="flex justify-center mb-5 w-full"></div>
+
+      <div class="relative flex py-1 items-center mb-5">
+        <div class="flex-grow border-t border-slate-800"></div>
+        <span class="flex-shrink mx-4 text-slate-500 text-[10px] uppercase tracking-widest font-bold">veya e-posta ile</span>
+        <div class="flex-grow border-t border-slate-800"></div>
+      </div>
+
+      <!-- Giriş Formu -->
+      <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">E-Posta Adresi</label>
+          <input type="email" id="loginEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Şifre</label>
+          <input type="password" id="loginPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all cursor-pointer">Giriş Yap</button>
+      </form>
+
+      <!-- Kayıt Ol Formu -->
+      <form id="registerForm" onsubmit="handleRegister(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Ad Soyad</label>
+          <input type="text" id="regName" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">E-Posta Adresi</label>
+          <input type="email" id="regEmail" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Şifre</label>
+          <input type="password" id="regPassword" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3.5 rounded-xl transition-all cursor-pointer">Hesap Oluştur</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- KULLANICI BİLGİLERİM MODALI -->
+  <div id="profileModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-2xl">
+      <button type="button" onclick="closeProfileModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <h3 class="text-xl font-black text-slate-100 mb-6 flex items-center gap-2"><i data-lucide="user-cog" class="w-5 h-5 text-amber-400"></i> Kullanıcı Bilgilerim</h3>
+      
+      <div class="space-y-4 bg-slate-950/60 p-5 rounded-2xl border border-slate-800">
+        <h4 class="text-xs font-extrabold text-amber-400 uppercase tracking-wider">Kişisel Bilgiler</h4>
+        <div class="space-y-3">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Ad Soyad</label>
+            <input type="text" id="profileName" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">E-Posta Adresi</label>
+            <input type="text" id="profileEmail" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500" readonly>
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">CEP TELEFONU <span class="text-rose-500">* (ZORUNLU)</span></label>
+            <input type="text" id="profilePhone" required placeholder="05XX XXX XX XX" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+        <div class="flex justify-between items-center pt-3 border-t border-slate-800">
+          <button type="button" onclick="saveProfileChanges()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition-all cursor-pointer">Değişiklikleri Kaydet</button>
+          <button type="button" onclick="deleteAccount()" class="text-xs font-bold text-rose-400 hover:underline cursor-pointer">Hesabımı Sil</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADRES BİLGİLERİM MODALI -->
+  <div id="addressModalMain" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-xl w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button type="button" onclick="closeAddressModalMain()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <div class="flex items-center justify-between mb-6 pb-3 border-b border-slate-800">
+        <h3 class="text-xl font-black text-slate-100 flex items-center gap-2"><i data-lucide="map-pin" class="w-5 h-5 text-amber-400"></i> Adres Bilgilerim</h3>
+        <button type="button" onclick="openAddressAddModal()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-xs transition-all flex items-center gap-1 cursor-pointer">
+          <i data-lucide="plus" class="w-4 h-4"></i> Yeni Adres Ekle
+        </button>
+      </div>
+
+      <div id="addressListContainer" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <!-- YENİ ADRES EKLE MODALI -->
+  <div id="addressAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full relative shadow-2xl max-h-[90vh] overflow-y-auto">
+      <button type="button" onclick="closeAddressAddModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <h3 class="text-xl font-black text-slate-100 mb-6">Adres Ekle</h3>
+      
+      <form onsubmit="handleSaveAddress(event)" class="space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Ad *</label>
+            <input type="text" id="addrName" required placeholder="Adınızı giriniz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Soyad *</label>
+            <input type="text" id="addrSurname" required placeholder="Soyadınızı giriniz" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Telefon *</label>
+          <input type="text" id="addrPhone" required placeholder="0555 555 55 55" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">İl *</label>
+            <select id="addrCity" required onchange="onCityChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+              <option value="">Seçiniz</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-bold text-slate-300 uppercase mb-1">İlçe *</label>
+            <select id="addrDistrict" required onchange="onDistrictChange()" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+              <option value="">Önce İl Seçiniz</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Mahalle *</label>
+          <select id="addrNeighborhood" required class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+            <option value="">Önce İlçe Seçiniz</option>
+          </select>
+        </div>
+
+        <div class="bg-amber-500/10 border border-amber-500/30 text-amber-400 text-[11px] p-3 rounded-xl flex items-center gap-2">
+          <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+          <span>Kargonuzun size sorunsuz bir şekilde ulaşabilmesi için mahalle, cadde, sokak, bina gibi detay bilgileri eksiksiz girdiğinizden emin olun.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Adres *</label>
+          <textarea id="addrText" required rows="2" placeholder="Cadde, mahalle sokak ve diğer bilgileri giriniz." class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase mb-1">Adres Başlığı *</label>
+          <input type="text" id="addrTitle" required placeholder="Örn: Evim, İş Yeri" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+        </div>
+
+        <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 rounded-xl transition-all cursor-pointer text-sm">Kaydet</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ÜRÜN İNCELEME MODALI -->
+  <div id="productModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div id="productModalContent" class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-4xl w-full relative shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto"></div>
+  </div>
+
+  <!-- BEDEN REHBERİ MODALI -->
+  <div id="sizeChartModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 max-w-md w-full relative">
+      <button type="button" onclick="closeSizeChartModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <h3 class="text-xl font-bold text-slate-100 mb-4 flex items-center gap-2"><i data-lucide="ruler" class="w-5 h-5 text-amber-400"></i> Beden Rehberi</h3>
+      <div class="space-y-3 text-sm text-slate-300">
+        <div class="flex justify-between p-2 bg-slate-950/60 rounded-lg"><span>S Beden:</span> <span class="font-bold text-amber-400">160 - 170 cm / 50 - 65 kg</span></div>
+        <div class="flex justify-between p-2 bg-slate-950/60 rounded-lg"><span>M Beden:</span> <span class="font-bold text-amber-400">170 - 180 cm / 65 - 75 kg</span></div>
+        <div class="flex justify-between p-2 bg-slate-950/60 rounded-lg"><span>L Beden:</span> <span class="font-bold text-amber-400">180 - 188 cm / 75 - 88 kg</span></div>
+        <div class="flex justify-between p-2 bg-slate-950/60 rounded-lg"><span>XL Beden:</span> <span class="font-bold text-amber-400">188 - 195 cm / 88 - 100 kg</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAYTR / ÖDEME SİMÜLASYON MODALI -->
+  <div id="paytrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl max-w-md w-full relative shadow-2xl overflow-hidden">
+      <button type="button" onclick="closePaytrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-100 z-10 cursor-pointer"><i data-lucide="x" class="w-6 h-6"></i></button>
+      <div id="paytrContainer"></div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT MANTIĞI -->
+  <script>
+    // PayTR API ve Mağaza Bilgileri
+    const paytrConfig = {
+      merchant_id: "769012",
+      merchant_key: "rDzQQXR33Kf1hyiB",
+      merchant_salt: "aRLWNq1g4hisGCR"
+    };
+
+    const turkey81Data = {
+      "Adana": { "Aladağ": ["Akören", "Eğner", "Karakuz", "Kökez", "Merkez"], "Ceyhan": ["Adatepe", "Birkent", "Cumhuriyet", "Esentepe", "Kösreli", "Muradiye"], "Çukurova": ["Barajyolu", "Esentepe", "Güzelyalı", "Karasu", "Mahfesığmaz", "Yurt"], "Feke": ["Gürümze", "Hıdıroğlu", "Kavakçalı", "Merkez"], "İmamoğlu": ["Ayrancı", "Cumhuriyet", "Hürriyet", "Koyuncular", "Uluçınar"], "Karaisalı": ["Atatürk", "Eğner", "Gocuk", "Karakılıç", "Merkez"], "Karamisalı": ["Merkez"], "Kozan": ["Aydın", "Bucak", "Çukurören", "Hacımirze", "Tufanlı", "Yenigün"], "Pozantı": ["Akçatekir", "Kamışlı", "Kurtuluş", "Zafer"], "Saimbeyli": ["Cııhali", "Gökçe", "Karakuyu", "Merkez"], "Sarıçam": ["Balcalı", "Çarkıpara", "Göztepe", "Karakuyu", "Sofulu"], "Seyhan": ["Baraj", "Fevzipaşa", "Gürselpaşa", "Şakirpaşa", "Ziyapaşa"], "Tufanbeyli": ["Akpınar", "Çatalçam", "İstiklal", "Merkez"], "Yumurtalık": ["Ayas", "Demirtaş", "Kırmızıdam", "Merkez"], "Yüreğir": ["Atakent", "Kozan Yolu", "Pttevleri", "Yamaçlı", "Yenidoğan"] },
+      "Adıyaman": { "Besni": ["Aşağı", "Erüç", "Köseceli", "Yenigün"], "Çelikhan": ["Aslanlı", "Fatih", "Mehmet Akif", "Pınarbaşı"], "Gerger": ["Gürgenli", "Konacık", "Merkez", "Tillo"], "Gölbaşı": ["Aşağıçöplü", "Belören", "Mimar Sinan", "Yavuz Selim"], "Kâhta": ["Akıncılar", "Turgut Reis", "Yavuz Selim", "Yeni Mahalle"], "Merkez": ["Atatürk", "Bahçelievler", "Karapınar", "Sümerevler", "Turgut Reis"], "Samsat": ["Kuştepe", "Merkez", "Yarımbağ"], "Sincik": ["Geçitli", "Merkez", "Yarpuzlu"], "Tut": ["Boyundere", "Merkez", "Yaylımlı"] },
+      "Afyonkarahisar": { "Başmakçı": ["Aşağı", "Yaka", "Yenigün"], "Bayat": ["Atatürk", "Fatih", "Karahacılı"], "Bolvadin": ["Dişli", "Özünhüsnü", "Yenidoğan", "Yörükler"], "Çay": ["Çukur", "Deresinek", "Karamık", "Pazar"], "Çobanlar": ["Kocaöz", "Merkez", "Yenidoğan"], "Dazkırı": ["Akkoyunlu", "Esentepe", "Yüreğir"], "Dinar": ["Bahçelievler", "Cumhuriyet", "Pınarbaşı", "Yeniyol"], "Emirdağ": ["Bademli", "Gömü", "İnkılap", "Yenice"], "İhsaniye": ["Döğer", "Kayhan", "Merkez"], "İscehisar": ["Bahçelievler", "Çalışkanlar", "Fatih", "Seydiler"], "Kızılören": ["Yenidoğan", "Zafer"], "Merkez": ["Ataköy", "Duatepe", "Fatih", "Marulcu", "Yenidoğan"], "Sandıklı": ["Çay", "Ece", "Mithatpaşa", "Şirinevler"], "Sinanpaşa": ["Düzağaç", "Kınık", "Merkez"], "Sultandağı": ["Dereçine", "Kırca", "Yenidoğan"], "Şuhut": ["Karaadilli", "Merkez", "Yalı"] },
+      "Ağrı": { "Diyadin": ["Atatürk", "Davut", "Molakara"], "Doğubayazıt": ["Ahmedi Hani", "Barış", "Çiftepınar", "Sanayi"], "Eleşkirt": ["Aşağı", "Yücekapı", "Ziyaret"], "Hamur": ["Kaledibi", "Yenidoğan"], "Merkez": ["Fevzi Çakmak", "Fırat", "Nevzat Güven", "Yavuz Mahallesi"], "Patnos": ["Dedeli", "Hürriyet", "Yenidoğan"], "Taşlıçay": ["Merkez", "Yenidoğan"], "Tutak": ["Bahçelievler", "Merkez"] },
+      "Amasya": { "Göynücek": ["Gökçeli", "Merkez"], "Gümüşhacıköy": ["Cumhuriyet", "Korkut", "Yenicami"], "Hamamözü": ["Kızılcaören", "Merkez"], "Merkez": ["Gökmedrese", "Hacılar Meydanı", "Mehmet Paşa", "Şamlar"], "Merzifon": ["Hasanpaşa", "Sofular", "Yenicami"], "Suluova": ["Bahçelievler", "Hürriyet", "Şeker"], "Taşova": ["Belevi", "Merkez", "Uluköy"] },
+      "Ankara": { "Akyurt": ["Baldudak", "Kızık", "Merkez"], "Altındağ": ["Alınteri", "Baraj", "Dutluk", "Güneşevler", "Önder"], "Ayaş": ["Hacıarif", "İnönü", "Pınaryaka"], "Bala": ["Karahamzalı", "Merkez", "Yeniköy"], "Beypazarı": ["Baı", "Hacıkara", "Zafer"], "Çamlıdere": ["Atatürk", "Bayındır"], "Çankaya": ["Ayrancı", "Bahçelievler", "Birlik", "Kızılay", "Yıldız"], "Çubuk": ["Barbaros", "Yıldırım Beyazıt"], "Elmadağ": ["Gümüşpala", "İsmetpaşa", "Yenidoğan"], "Etimesgut": ["Elvankent", "Eryaman", "Bağlıca", "Tunahan"], "Evren": ["Esentepe", "Merkez"], "Gölbaşı": ["Bahçelievler", "Eymir", "Gazi", "İncek"], "Haymana": ["Medrese", "Türkşerefli"], "Kahramankazan": ["Atatürk", "Fatih", "Yassıören"], "Kalecik": ["Ahmet Yesevi", "Yenidoğan"], "Keciören": ["Atapark", "Etlik", "Kuşcağız", "Ufuktepe"], "Kızılcahamam": ["Akçay", "Yenice"], "Mamak": ["Abidinpaşa", "Durali Ali", "Natoyolu", "Şahintepe"], "Nallıhan": ["Atatürk", "Nasuhpaşa"], "Polatlı": ["Şentepe", "Mehmet Akif", "Esentepe"], "Pursaklar": ["Ayyıldız", "Merkez", "Saracalar"], "Sincan": ["Fatih", "Yenikent", "Tandoğan"], "Şereflikoçhisar": ["Tuz Gölü", "Yenidoğan"], "Yenimahalle": ["Batıkent", "Çayyolu", "Demetevler", "Ergazi"] },
+      "Antalya": { "Akseki": ["Cevizli", "Merkez"], "Aksu": ["Altıntaş", "Güzelyurt", "Merkez"], "Alanya": ["Cikcilli", "Mahmutlar", "Oba", "Saray", "Tersane"], "Demre": ["Alakent", "Çevreli"], "Elmalı": ["Akçay", "Goçek"], "Finike": ["Hasyurt", "İskele", "Turunçova"], "Gazipaşa": ["Pazarcı", "Yenigüney"], "Gündoğmuş": ["Köprülü", "Merkez"], "İbradi": ["Merkez"], "Kaş": ["Kalkan", "Kınık", "Merkez"], "Kemer": ["Çamyuva", "Göynük", "Merkez", "Tekirova"], "Kepez": ["Ahmet Yesevi", "Çankaya", "Fevzi Çakmak", "Varsak"], "Konyaaltı": ["Arapsuyu", "Gürsu", "Liman", "Uncalı"], "Korkuteli": ["Aşağı", "Yayla"], "Kumluca": ["Mavikent", "Merkez"], "Manavgat": ["Çolaklı", "Evrenseki", "Side", "Yukarışıhlar"], "Muratpaşa": ["Fener", "Şirinyalı", "Varlık", "Zerdalilik"], "Serik": ["Belek", "Kadriye", "Merkez"] },
+      "Artvin": { "Ardanuç": ["Aşağı", "Merkez"], "Arhavi": ["Boğaziçi", "Musazade"], "Borçka": ["Merkez", "Yenigün"], "Hopa": ["Cumhuriyet", "Orta", "Subaşı"], "Kurgul": ["Merkez"], "Merkez": ["Çarşı", "İnönü", "Yenicami"], "Şavşat": ["Atatürk", "Tepebaşı"], "Yusufeli": ["Merkez", "Yenidoğan"] },
+      "Aydın": { "Bozdoğan": ["Merkez", "Yazıkent"], "Buharkent": ["Fatih", "Zafer"], "Çine": ["Kervansaray", "Şeyhler"], "Didim": ["Akbük", "Fevzipaşa", "Mavişehir"], "Efeler": ["Cuma", "Fatih", "Kurtuluş", "Mimar Sinan"], "Germencik": ["Ortaklar", "Yenidoğan"], "İncirliova": ["Acarlar", "Kurtuluş"], "Karacasu": ["Cuma", "Merkez"], "Karpuzlu": ["Merkez"], "Koçarlı": ["Merkez"], "Köşk": ["Başçayır", "Merkez"], "Kuşadası": ["Davutlar", "Güzelçamlı", "Hacıfeyzullah", "İkiçeşmelik"], "Kuyucak": ["Pamukören", "Yenialan"], "Nazilli": ["Altıntaş", "Dumlupınar", "Yıldıztepe"], "Söke": ["Atatürk", "Yenidoğan", "Yenicami"], "Sultanhisar": ["Atça", "Merkez"], "Yenipazar": ["Merkez"] },
+      "Balıkesir": { "Altıeylül": ["Bahçelievler", "Gümüşçeşme", "Kasımlar", "Plevne"], "Ayvalık": ["Alibey", "Armutçuk", "Çamlık", "Fevzipaşa"], "Balya": ["Merkez"], "Bandırma": ["10 Nisan", "İhsaniye", "Paşabayır", "Sunullah"], "Bigadiç": ["Atatürk", "Merkez"], "Burhaniye": ["Ören", "Bahçelievler"], "Dursunbey": ["İstasyon", "Merkez"], "Edremit": ["Akçay", "Altınoluk", "Güre", "Cennetayağı"], "Erdek": ["Yalı", "Zeytinli"], "Gömeç": ["Merkez"], "Gönen": ["Kaplıca", "Kurtuluş"], "Havran": ["İnönü", "Kale"], "İvrindi": ["Merkez"], "Karesi": ["Atatürk", "Paşaalanı", "Toygar", "Yıldırım"], "Kepsut": ["Merkez"], "Manyas": ["Merkez"], "Savaştepe": ["Merkez"], "Sındırgı": ["Merkez"], "Susurluk": ["Han", "Yıldız"] },
+      "Bilecik": { "Bozüyük": ["4 Eylül", "Kasımpaşa", "Yenicami"], "Gölpazarı": ["Merkez"], "İnhisar": ["Merkez"], "Merkez": ["Bahçelievler", "Beşiktaş", "İstasyon"], "Osmaneli": ["Camiicedit", "Yenidoğan"], "Pazaryeri": ["Merkez"], "Söğüt": ["Kültür", "Orhangazi"], "Yenipazar": ["Merkez"] },
+      "Bingöl": { "Adaklı": ["Merkez"], "Genç": ["Cumhuriyet", "Yenimahalle"], "Karlıova": ["Merkez"], "Kiğı": ["Merkez"], "Merkez": ["İnönü", "Simani", "Yenimahalle"], "Solhan": ["Esentepe", "Yenimahalle"], "Yayladere": ["Merkez"], "Yedisu": ["Merkez"] },
+      "Bitlis": { "Adilcevaz": ["Aydınlar", "Orta"], "Ahlat": ["Kale", "Merkez"], "Güroymak": ["Bağlar", "Merkez"], "Hizan": ["Merkez"], "Merkez": ["Beşminare", "Gazibey", "Hüsrevpaşa"], "Tatvan": ["Aydınlar", "Fatih", "Kültür"] },
+      "Bolu": { "Dörtdivan": ["Merkez"], "Gerede": ["Dayıoğlu", "Nefise Sultan"], "Göynük": ["Merkez"], "Kıbrıscık": ["Merkez"], "Mengen": ["Merkez"], "Merkez": ["Borazanlar", "Çıkınlar", "Karaköy", "Sağlık"], "Mudurnu": ["Merkez"], "Seben": ["Merkez"], "Yeniçağa": ["Merkez"] },
+      "Burdur": { "Ağlasun": ["Merkez"], "Altınyayla": ["Merkez"], "Bucak": ["Konak", "Yenigün"], "Çavdır": ["Merkez"], "Çeltikçi": ["Merkez"], "Gölhisar": ["Yusufça", "Çarşı"], "Karamanlı": ["Merkez"], "Kemer": ["Merkez"], "Merkez": ["Bağlar", "Burç", "Karakent"], "Tefenni": ["Esentepe", "Fatih"], "Yeşilova": ["Merkez"] },
+      "Bursa": { "Büyükorhan": ["Merkez"], "Gemlik": ["Cihatlı", "Dr. Ziya Kaya", "Hisar", "Kumsal"], "Gürsu": ["Adaköy", "Zafer"], "Harmancık": ["Merkez"], "İnegöl": ["Alanyurt", "Osmaniye", "Sinanbey", "Süleymaniye"], "İznik": ["Eşrefoğlu", "Mahmut Çelebi"], "Karacabey": ["Esentepe", "Rıhtım"], "Keles": ["Merkez"], "Kestel": ["Esentepe", "Vani Mehmed"], "Mudanya": ["Güzelyalı", "Halitpaşa", "Şükrü Çavuş"], "Mustafakemalpaşa": ["Atatürk", "Yüzüncüyıl"], "Nilüfer": ["Beşevler", "Fethiye", "Görükle", "İhsaniye", "Özlüce"], "Orhaneli": ["Merkez"], "Orhangazi": ["Camiikebir", "Hürriyet"], "Osmangazi": ["Altıparmak", "Çekirge", "Fatih", "Hamitler", "Yunuseli"], "Yenişehir": ["Ertuğrulgazi", "Yenigün"], "Yıldırım": ["Duatepe", "Esenevler", "Mimar Sinan", "Setbaşı"] },
+      "Çanakkale": { "Ayvacık": ["Merkez"], "Biga": ["İstiklal", "Sakarya", "Şirintepe"], "Bozcaada": ["Cumhuriyet", "Alaybey"], "Çan": ["Atatürk", "Cumhuriyet"], "Eceabat": ["Merkez"], "Ezine": ["Seferşah", "Camii kebir"], "Gelibolu": ["Hoca Hamza", "Yazıcızade"], "Gökçeada": ["Fatih", "Yenimahalle"], "Lapseki": ["Gazikou", "Cumhuriyet"], "Merkez": ["Barbaros", "Cevatpaşa", "Esenler", "Fevzipaşa"], "Yenice": ["Merkez"] },
+      "Çankırı": { "Atkaracalar": ["Merkez"], "Bayramören": ["Merkez"], "Çerkeş": ["Karamustafa", "Yenicami"], "Eldivan": ["Merkez"], "Ilgaz": ["Merkez"], "Kızılırmak": ["Merkez"], "Korgun": ["Merkez"], "Kurşunlu": ["Merkez"], "Merkez": ["Abdülhalim Rende", "Aşağıçavuş", "Buğdaypazarı"], "Orta": ["Merkez"], "Şabanözü": ["Merkez"], "Yapraklı": ["Merkez"] },
+      "Çorum": { "Alaca": ["Yıldızhan", "Zileli"], "Bayat": ["Merkez"], "Boğazkale": ["Merkez"], "Dodurga": ["Merkez"], "İskilip": ["Ahmet Çatak", "Meydan"], "Kargı": ["Merkez"], "Laçin": ["Merkez"], "Mecitözü": ["Merkez"], "Merkez": ["Bahçelievler", "Mimar Sinan", "Üçtutlar", "Yavruturna"], "Oğuzlar": ["Merkez"], "Ortaköy": ["Merkez"], "Osmancık": ["Karaköy", "Şenyurt"], "Sungurlu": ["Akpınar", "Bağlarbaşı", "Hürriyet"], "Uğurludağ": ["Merkez"] },
+      "Denizli": { "Acıpayam": ["Yenidoğan", "Aşağıkuyucak"], "Babadağ": ["Merkez"], "Baklan": ["Merkez"], "Bekilli": ["Merkez"], "Beyağaç": ["Merkez"], "Bozkurt": ["Merkez"], "Buldan": ["Yenice", "Mahmutoğlu"], "Çal": ["Merkez"], "Çameli": ["Merkez"], "Çardak": ["Merkez"], "Çivril": ["Saray", "Özdemirci"], "Güney": ["Merkez"], "Honaz": ["Merkez"], "Kale": ["Merkez"], "Merkezefendi": ["Adalet", "Değirmenönü", "Karahayıt", "Şemikler"], "Pamukkale": ["Atatürk", "Bağbaşı", "Fatih", "Kervansaray"], "Sarayköy": ["Camiatik", "Nergis"], "Serinhisar": ["Merkez"], "Tavas": ["Yenidoğan", "Bağlar"] },
+      "Diyarbakır": { "Bağlar": ["Bağcılar", "Şeyh Şamil", "Yunus Emre"], "Bismil": ["Altıok", "Dicle"], "Çermik": ["Merkez"], "Çınar": ["Merkez"], "Çüngüş": ["Merkez"], "Dicle": ["Merkez"], "Eğil": ["Merkez"], "Ergani": ["Krem", "Fevzi Çakmak"], "Hani": ["Merkez"], "Hazro": ["Merkez"], "Kayapınar": ["Barış", "Fırat", "Medya", "Peyas"], "Kocaköy": ["Merkez"], "Kulp": ["Merkez"], "Lice": ["Merkez"], "Silvan": ["Mescit", "Fevzi Çakmak"], "Sur": ["Cevatpaşa", "Hasırlı", "Savaş"], "Yenişehir": ["Fabrika", "Ofis", "Şehitlik"] },
+      "Düzce": { "Akçakoca": ["Orhangazi", "Yalı"], "Cumayeri": ["Merkez"], "Çilimli": ["Merkez"], "Gölyaka": ["Merkez"], "Gümüşova": ["Merkez"], "Kaynaşlı": ["Merkez"], "Merkez": ["Aziziye", "Cedidiye", "Kültür", "Şerefiye"], "Yığılca": ["Merkez"] },
+      "Edirne": { "Enez": ["Merkez"], "Havsa": ["Merkez"], "İpsala": ["Merkez"], "Keşan": ["Büyük Cami", "İnönü", "Yenimescit"], "Lalapaşa": ["Merkez"], "Meriç": ["Merkez"], "Merkez": ["Babademirtaş", "Kaleiçi", "Şükrüpaşa", "Yıldırım"], "Süloğlu": ["Merkez"], "Uzunköprü": ["Atatürk", "Muradiye"] },
+      "Elazığ": { "Ağın": ["Merkez"], "Alacakaya": ["Merkez"], "Arıcak": ["Merkez"], "Baskil": ["Merkez"], "Karakoçan": ["Merkez"], "Keban": ["Baraj", "Çarşı"], "Kovancılar": ["Merkez"], "Maden": ["Merkez"], "Merkez": ["Aksaray", "Kırklar", "Rızaiye", "Sürsürü"], "Palu": ["Merkez"], "Sivrice": ["Merkez"] },
+      "Erzincan": { "Çayırlı": ["Merkez"], "İliç": ["Merkez"], "Kemah": ["Merkez"], "Kemaliye": ["Merkez"], "Merkez": ["Ergenekon", "Karakavak", "Yunus Emre"], "Otlukbeli": ["Merkez"], "Refahiye": ["Merkez"], "Tercan": ["Merkez"], "Üzümlü": ["Fatih", "Kalan"] },
+      "Erzurum": { "Aşkale": ["Merkez"], "Aziziye": ["Dadaşkent", "Yenidoğan"], "Çat": ["Merkez"], "Hınıs": ["Merkez"], "Horasan": ["Merkez"], "İspir": ["Merkez"], "Karaçoban": ["Merkez"], "Karayazı": ["Merkez"], "Köprüköy": ["Merkez"], "Narman": ["Merkez"], "Oltu": ["Merkez"], "Olur": ["Merkez"], "Palandöken": ["Abdülrahman Gazi", "Yıldızkent", "Yunus Emre"], "Pasinler": ["Merkez"], "Pazaryolu": ["Merkez"], "Şenkaya": ["Merkez"], "Tekman": ["Merkez"], "Tortum": ["Merkez"], "Uzundere": ["Merkez"], "Yakutiye": ["Gez", "Rabia Hatun", "Şükrüpaşa"] },
+      "Eskişehir": { "Alpu": ["Merkez"], "Beylikova": ["Merkez"], "Çifteler": ["Merkez"], "Günyüzü": ["Merkez"], "Han": ["Merkez"], "İnönü": ["Merkez"], "Mahmudiye": ["Merkez"], "Mihalgazi": ["Merkez"], "Mihalıççık": ["Merkez"], "Odunpazarı": ["7evler", "Büyükdere", "Emek", "Vişnelik"], "Sarıcakaya": ["Merkez"], "Seyitgazi": ["Merkez"], "Sivrihisar": ["Merkez"], "Tepebaşı": ["Çamlıca", "Ertuğrulgazi", "Göztepe", "Şirintepe"] },
+      "Gaziantep": { "Araban": ["Merkez"], "İslahiye": ["Hacı Ali", "Karakaya"], "Karkamış": ["Merkez"], "Nizip": ["Fatih", "Mimar Sinan"], "Nurdağı": ["Merkez"], "Oğuzeli": ["Merkez"], "Şahinbey": ["Akkent", "İbn-i Sina", "Karataş", "Şahintepe"], "Şehitkamil": ["Batıkent", "Emek", "Fıstıklık", "Göztepe"], "Yavuzeli": ["Merkez"] },
+      "Giresun": { "Alucra": ["Merkez"], "Bulancak": ["İstasyon", "Sanayi"], "Çamoluk": ["Merkez"], "Çanakçı": ["Merkez"], "Dereli": ["Merkez"], "Doğankent": ["Merkez"], "Espiye": ["Merkez"], "Eynesil": ["Merkez"], "Görele": ["Merkez"], "Güce": ["Merkez"], "Keşap": ["Merkez"], "Merkez": ["Çıtlakkale", "Fevzi Çakmak", "Kavaklar"], "Piraziz": ["Merkez"], "Şebinkarahisar": ["Merkez"], "Tirebolu": ["Merkez"], "Yağlıdere": ["Merkez"] },
+      "Gümüşhane": { "Kelkit": ["Bahçelievler", "Cumhuriyet"], "Köse": ["Merkez"], "Kürtün": ["Merkez"], "Merkez": ["Hasanbey", "Karaer", "Özgür"], "Şiran": ["Merkez"], "Torul": ["Merkez"] },
+      "Hakkari": { "Çukurca": ["Merkez"], "Merkez": ["Biçer", "Bulak", "Merzan"], "Şemdinli": ["Merkez"], "Yüksekova": ["Esentepe", "Güngör"] },
+      "Hatay": { "Altınözü": ["Merkez"], "Antakya": ["Cebrail", "Esentepe", "Karaköse", "Ürgenpaşa"], "Arsuz": ["Gözcüler", "Merkez"], "Belen": ["Merkez"], "Defne": ["Dörtyol", "Elektrik"], "Dörtyol": ["Numune", "Çaylı"], "Erzin": ["Merkez"], "Hassa": ["Merkez"], "İskenderun": ["Mustafa Kemal", "Numune", "Savaş", "Çay"], "Kırıkhan": ["Merkez"], "Kumlu": ["Merkez"], "Reyhanlı": ["Merkez"], "Samandağ": ["Merkez"], "Yayladağı": ["Merkez"] },
+      "Iğdır": { "Aralık": ["Merkez"], "Karakoyunlu": ["Merkez"], "Merkez": ["Bağlar", "Emek", "Söğütlü"], "Tuzluca": ["Bahçelievler", "Cumhuriyet"] },
+      "Isparta": { "Aksu": ["Merkez"], "Atabey": ["Merkez"], "Eğirdir": ["Bağlar", "Cami"], "Gelendost": ["Merkez"], "Gönen": ["Merkez"], "Keçiborlu": ["Merkez"], "Merkez": ["Bahçelievler", "Fatih", "Hızırbey", "Yenidoğan"], "Senirkent": ["Merkez"], "Sütçüler": ["Merkez"], "Şarkikaraağaç": ["Merkez"], "Uluborlu": ["Merkez"], "Yalvaç": ["Merkez"], "Yenişarbademli": ["Merkez"] },
+      "İstanbul": { "Adalar": ["Burgazada", "Büyükada", "Heybeliada", "Kınalıada"], "Arnavutköy": ["Bolluca", "Hadımköy", "Merkez", "Taşoluk"], "Ataşehir": ["Barbaros", "Esatpaşa", "Küçükbakkalköy", "Örnek"], "Avcılar": ["Ambarlı", "Cihangir", "Gümüşpala", "Merkez"], "Bağcılar": ["10ıl", "Barbaros", "Güneşli", "Yıldıztepe"], "Bahçelievler": ["Ataköy", "Bahçelievler", "Şirinevler", "Yenibosna"], "Bakırköy": ["Ataköy", "Florya", "Yeşilköy", "Zeytinlik"], "Başakşehir": ["Bahçeşehir", "Başak", "İkitelli", "Ziya Gökalp"], "Bayrampaşa": ["Altıntepsi", "Kocatepe", "Muratpaşa", "Vatan"], "Beşiktaş": ["Barbaros", "Bebek", "Cihangir", "Etiler", "Levent"], "Beykoz": ["Anadoluhisarı", "Kanlıca", "Kavacık", "Merkez"], "Beylikdüzü": ["Barış", "Gürpınar", "Kavaklı", "Yakuplu"], "Beyoğlu": ["Cihangir", "Galata", "Karaköy", "Taksim"], "Büyükçekmece": ["Atatürk", "Fatih", "Mimar Sinan", "Kumburgaz"], "Çatalca": ["Ferhatpaşa", "Kaleiçi", "Ferhatpaşa"], "Çekmeköy": ["Çamlık", "Merkez", "Mimar Sinan", "Taşdelen"], "Esenler": ["Atışalanı", "Fevzi Çakmak", "Menderes", "Turgut Reis"], "Esenyurt": ["Esenkent", "Hürriyet", "Mehmet Akif Ersoy", "Pınar"], "Eyüpsultan": ["Alibeyköy", "Göktürk", "Kemerburgaz", "Merkez"], "Fatih": ["Aksaray", "Balat", "Eminönü", "Fener", "Laleli", "Sultanahmet"], "Gaziosmanpaşa": ["Bağlarbaşı", "Fevzi Çakmak", "Merkez", "Yenidoğan"], "Güngören": ["Gençosman", "Merkez", "Tozkoparan"], "Kadıköy": ["Caferağa", "Fenerbahçe", "Göztepe", "Moda", "Suadiye"], "Kağıthane": ["Arnavutköy", "Çeliktepe", "Gültepe", "Merkez"], "Kartal": ["Atalar", "Çavuşoğlu", "Kordonboyu", "Soğanlık"], "Küçükçekmece": ["Atakent", "Fatih", "Halkalı", "Sefaköy"], "Maltepe": ["Altayçeşme", "Bağlarbaşı", "Feyzullah", "İdealtepe"], "Pendik": ["Batı", "Güzelyalı", "Kaynarca", "Yenişehir"], "Sancaktepe": ["Eyüp Sultan", "Sarıgazi", "Yenidoğan"], "Sarıyer": ["Emirgan", "Istinye", "Maslak", "Tarabya", "Yeniköy"], "Silivri": ["Alipaşa", "Gümüşyaka", "Piri Mehmet Paşa", "Selimpaşa"], "Sultanbeyli": ["Battalgazi", "Necip Fazıl", "Orhangazi"], "Sultangazi": ["Cebeci", "Gazi", "İsmetpaşa", "Uğur Mumcu"], "Şile": ["Agva", "Balibey", "Merkez"], "Şişli": ["Harbiye", "Mecidiyeköy", "Pangaltı", "Teşvikiye"], "Tuzla": ["Evliya Çelebi", "İçmeler", "Merkez", "Postane"], "Ümraniye": ["Atatürk", "Çakmak", "Esenşehir", "İstiklal"], "Üsküdar": ["Acıbadem", "Altunizade", "Beylerbeyi", "Çengelköy", "Salacak"], "Zeytinburnu": ["Beştelsiz", "Merkez", "Seyitnizam"] },
+      "İzmir": { "Aliağa": ["Atatürk", "Kültür", "Yeni"], "Balçova": ["Eğitim", "Fevzi Çakmak", "İnciraltı"], "Bayındır": ["Merkez", "Yenidoğan"], "Bayraklı": ["Manavkuyu", "Mansuroğlu", "Osmangazi", "Turan"], "Bergama": ["Atatürk", "Fevzipaşa"], "Beydağ": ["Merkez"], "Bornova": ["Atatürk", "Erzene", "Kazımdirik", "Pınarbaşı"], "Buca": ["Adatepe", "Buca Koop", "Şirinyer", "Yıldızlar"], "Çeşme": ["Alaçatı", "Dalyan", "Ilıca", "Merkez"], "Çiğli": ["Ataşehir", "Balatçık", "Egekent", "Sasalı"], "Dikili": ["Merkez", "Salimbey"], "Foça": ["Gerenköy", "Merkez", "Yeni Foça"], "Gaziemir": ["Atıfbey", "Sarnıç", "Yenigün"], "Güzelbahçe": ["Kahramandere", "Yalı"], "Karabağlar": ["Basınsitesi", "Eski İzmir", "Uğur Mumcu", "Vatandaş"], "Karaburun": ["Merkez"], "Karşıyaka": ["Alaybey", "Bostanlı", "Donanmacı", "Mavişehir"], "Kemalpaşa": ["Armutlu", "Merkez"], "Kınık": ["Merkez"], "Kiraz": ["Merkez"], "Menemen": ["Ulukent", "Yenidoğan", "Esatpaşa"], "Narlıdere": ["Atatürk", "Yenikale"], "Ödemiş": ["Hürriyet", "Mithatpaşa"], "Seferihisar": ["Sığacık", "Ulamış", "Merkez"], "Selçuk": ["Acarlar", "Merkez"], "Tire": ["Fatih", "Yeni"], "Torbalı": ["Ayrancılar", "Ertuğrul", "Yazıbaşı"], "Urla": ["İskele", "Kuşçular", "Zeytinalanı"] },
+      "Kahramanmaraş": { "Afşin": ["Atatürk", "Efsus"], "Andırın": ["Merkez"], "Çağlayancerit": ["Merkez"], "Dulkadiroğlu": ["Bahçelievler", "İsmetpaşa", "Yenidoğan"], "Ekinözü": ["Merkez"], "Elbistan": ["Battalgazi", "Karahasanuşağı"], "Göksun": ["Merkez"], "Nurhak": ["Merkez"], "Onikişubat": ["Haydarbey", "Şehit Abdullah Çavuş", "Yavuz Selim"], "Pazarcık": ["Merkez"] },
+      "Karabük": { "Eflani": ["Merkez"], "Eskipazar": ["Merkez"], "Merkez": ["100. Yıl", "5 Temmuz", "Bayır"], "Ovacık": ["Merkez"], "Safranbolu": ["Barış", "Emek", "Karamusa"], "Yenice": ["Merkez"] },
+      "Karaman": { "Ayrancı": ["Merkez"], "Başyayla": ["Merkez"], "Ermenek": ["Çınarlı", "Göztepe"], "Kazımkarabekir": ["Merkez"], "Merkez": ["Alacasuluk", "Krisis", "Zembilli"], "Sarıveliler": ["Merkez"] },
+      "Kars": { "Akyaka": ["Merkez"], "Arpaçay": ["Merkez"], "Digor": ["Merkez"], "Kağızman": ["Merkez"], "Merkez": ["Faikbey", "Ortapınar", "Yeni"], "Sarıkamış": ["İnönü", "Kazım Karabekir"], "Selim": ["Merkez"], "Susuz": ["Merkez"] },
+      "Kastamonu": { "Abana": ["Merkez"], "Ağlı": ["Merkez"], "Araç": ["Merkez"], "Azdavay": ["Merkez"], "Bozkurt": ["Merkez"], "Cide": ["Merkez"], "Çatalzeytin": ["Merkez"], "Daday": ["Merkez"], "Devrekani": ["Merkez"], "Doğanyurt": ["Merkez"], "Hanönü": ["Merkez"], "İhsangazi": ["Merkez"], "İnebolu": ["Merkez"], "Küre": ["Merkez"], "Merkez": ["Esentepe", "Hepkebirler", "İnönü"], "Pınarbaşı": ["Merkez"], "Seydiler": ["Merkez"], "Şenpazar": ["Merkez"], "Taşköprü": ["Merkez"], "Tosya": ["Bahçelievler", "Yavuzselim"] },
+      "Kayseri": { "Akkışla": ["Merkez"], "Bünyan": ["Merkez"], "Develi": ["Sopia", "Yenice"], "Felahiye": ["Merkez"], "Hacılar": ["Akdam", "Merkez"], "Incesu": ["Merkez"], "Kocasinan": ["Erkilet", "Fevzi Çakmak", "Yavuzselim"], "Melikgazi": ["Alpaslan", "Görkem", "Köşk", "Yıldızevler"], "Pınarbaşı": ["Merkez"], "Sarıoğlan": ["Merkez"], "Sarız": ["Merkez"], "Talas": ["Bahçelievler", "Mevlana", "Yenidoğan"], "Tomarza": ["Merkez"], "Yahyalı": ["Merkez"], "Yeşilhisar": ["Merkez"] },
+      "Kırıkkale": { "Bahşılı": ["Merkez"], "Balışeyh": ["Merkez"], "Çelebi": ["Merkez"], "Delice": ["Merkez"], "Karakeçili": ["Merkez"], "Keskin": ["Altınkaya", "Yenidoğan"], "Merkez": ["Kaletepe", "Ovacık", "Yenidoğan"], "Sulakyurt": ["Merkez"], "Yahşihan": ["Merkez"] },
+      "Kırklareli": { "Babaeski": ["Fevzi Çakmak", "Gazi Kemal"], "Demirköy": ["Merkez"], "Kofçaz": ["Merkez"], "Lüleburgaz": ["Kurtuluş", "Özal", "Yıldırım", "Zafer"], "Merkez": ["Bademlik", "Demirtaş", "Karacaibrahim", "Pınar"], "Pehlivanköy": ["Merkez"], "Pınarhisar": ["Merkez"], "Vize": ["Merkez"] },
+      "Kırşehir": { "Akçakent": ["Merkez"], "Akpınar": ["Merkez"], "Boztepe": ["Merkez"], "Çiçekdağı": ["Merkez"], "Kaman": ["Bahçelievler", "Çarşı"], "Merkez": ["Kuşdili", "Medrese", "Yenice"], "Mucur": ["Merkez"] },
+      "Kilis": { "Elbeyli": ["Merkez"], "Merkez": ["Deliosman", "Ekrem Çetin", "Kazım Karabekir"], "Musabeyli": ["Cumhuriyet"], "Polateli": ["Merkez"] },
+      "Kocaeli": { "Başiskele": ["Fatih", "Yenidoğan"], "Çayırova": ["Akse", "İnönü"], "Darıca": ["Balyoz", "Kazım Karabekir", "Nenehatun"], "Derince": ["Çenedag", "Yenikent"], "Dilovası": ["Köseler", "Merkez"], "Gebze": ["Barış", "Mimar Sinan", "Tatlıkuyu", "Yavuz Selim"], "Gölcük": ["Değirmendere", "Merkez"], "İzmit": ["Alikahya", "Körfez", "Mehmet Ali Paşa", "Yenidoğan"], "Kandıra": ["Merkez"], "Karamürsel": ["Merkez"], "Kartepe": ["Köseköy", "Rahmiye"], "Körfez": ["Hereke", "Yarımca"] },
+      "Konya": { "Ahırlı": ["Merkez"], "Akören": ["Merkez"], "Akşehir": ["Atatürk", "Yenidoğan"], "Altınekin": ["Merkez"], "Beyşehir": ["Bahçelievler", "Esentepe"], "Bozkır": ["Merkez"], "Cihanbeyli": ["Merkez"], "Çeltik": ["Merkez"], "Çumra": ["Merkez"], "Derbent": ["Merkez"], "Derebucak": ["Merkez"], "Doğanhisar": ["Merkez"], "Emirgazi": ["Merkez"], "Ereğli": ["Atatürk", "Meydan"], "Hüyük": ["Merkez"], "Ilgın": ["Merkez"], "Kadınhanı": ["Merkez"], "Karapınar": ["Merkez"], "Karatay": ["Akabe", "Fetih", "Şemsiyetepe"], "Kulu": ["Merkez"], "Meram": ["Alavardı", "Aydoğdu", "Harmancık"], "Sarayönü": ["Merkez"], "Selçuklu": ["Bosna Hersek", "Sancak", "Yazır", "Yenidoğan"], "Seydişehir": ["Merkez"], "Taşkent": ["Merkez"], "Tuzlukçu": ["Merkez"], "Yalıhüyük": ["Merkez"], "Yunak": ["Merkez"] },
+      "Kütahya": { "Altıntaş": ["Merkez"], "Aslanapa": ["Merkez"], "Çavdarhisar": ["Merkez"], "Domaniç": ["Merkez"], "Dumlupınar": ["Merkez"], "Emet": ["Merkez"], "Gediz": ["Merkez"], "Hisarcık": ["Merkez"], "Merkez": ["Fuat Paşa", "Maltepe", "Yenidoğan"], "Pazarlar": ["Merkez"], "Simav": ["Merkez"], "Şaphane": ["Merkez"], "Tavşanlı": ["Durak", "Tepecik"] },
+      "Malatya": { "Akçadağ": ["Merkez"], "Arapgir": ["Merkez"], "Arguvan": ["Merkez"], "Battalgazi": ["Fırat", "Merkez", "Orduzu"], "Darende": ["Merkez"], "Doğanşehir": ["Merkez"], "Doğanyol": ["Merkez"], "Hekimhan": ["Merkez"], "Kale": ["Merkez"], "Kuluncak": ["Merkez"], "Pütürge": ["Merkez"], "Yazıhan": ["Merkez"], "Yeşilyurt": ["Gedik", "İlyas", "Salköprü", "Tecde"] },
+      "Manisa": { "Ahmetli": ["Merkez"], "Akhisar": ["Hürriyet", "Reşatbey"], "Alaşehir": ["Sakarya", "Yenidoğan"], "Demirci": ["Merkez"], "Gölmarmara": ["Merkez"], "Gördes": ["Merkez"], "Kırkağaç": ["Merkez"], "Köprübaşı": ["Merkez"], "Kula": ["Merkez"], "Salihli": ["Kurtuluş", "Mithatpaşa"], "Sarıgöl": ["Merkez"], "Saruhanlı": ["Merkez"], "Selendi": ["Merkez"], "Soma": ["Cenkyeri", "Kurtuluş"], "Şehzadeler": ["Adnan Menderes", "Dilşatdemir", "Nurlupınar"], "Turgutlu": ["Acarlar", "Ergenekon"], "Yunusemre": ["Barbaros", "Karaköy", "Lale", "Muradiye"] },
+      "Mardin": { "Artuklu": ["1. Cadde", "Nur", "Şarampol", "Yalım"], "Dargeçit": ["Merkez"], "Derik": ["Merkez"], "Kızıltepe": ["Bahçelievler", "Tepebaşı"], "Mazıdağı": ["Merkez"], "Midyat": ["Bahçelievler", "Gölcük"], "Nusaybin": ["Abdurrahman", "Mitanni"], "Ömerli": ["Merkez"], "Savur": ["Merkez"], "Yeşilli": ["Merkez"] },
+      "Mersin": { "Akdeniz": ["Çilek", "Kazanlı", "Nusratiye"], "Anamur": ["Merkez"], "Aydıncık": ["Merkez"], "Bozyazı": ["Merkez"], "Çamlıyayla": ["Merkez"], "Erdemli": ["Merkez", "Kargıpınarı"], "Gülnar": ["Merkez"], "Mezitli": ["Viranşehir", "Tece", "Merkez"], "Silifke": ["Atakent", "Merkez"], "Tarsus": ["Anıt", "Karakütük", "Şehitishak"], "Toroslar": ["Akbelen", "Aladağ", "Çağdaş"], "Yenişehir": ["Barbaros", "Fatih", "Güvenevler", "Menteş"] },
+      "Muğla": { "Bodrum": ["Bitez", "Gümbet", "Turgutreis", "Yalıkavak"], "Dalaman": ["Merkez"], "Datça": ["Merkez"], "Fethiye": ["Çalış", "Göcek", "Ölüdeniz", "Patlangıç"], "Kavaklıdere": ["Merkez"], "Köyceğiz": ["Merkez"], "Marmaris": ["Armutalan", "Çıldır", "İçmeler"], "Menteşe": ["Kadirpaşa", "Muslihittin", "Orhaniye"], "Milas": ["Güllük", "Ören", "Merkez"], "Ortaca": ["Merkez"], "Seydikemer": ["Merkez"], "Ula": ["Merkez"], "Yatağan": ["Merkez"] },
+      "Muş": { "Bulanık": ["Karaköse", "Yenidoğan"], "Hasköy": ["Merkez"], "Korkut": ["Merkez"], "Malazgirt": ["Merkez"], "Merkez": ["Bahar", "Kültür", "Minare"], "Varto": ["Merkez"] },
+      "Nevşehir": { "Acıgöl": ["Merkez"], "Avanos": ["Merkez"], "Derinkuyu": ["Merkez"], "Gülşehir": ["Merkez"], "Hacıbektaş": ["Merkez"], "Kozaklı": ["Merkez"], "Merkez": ["20 Evler", "Cevher Dudayev", "Güzelyurt"], "Ürgüp": ["Damsa", "Esbelli"] },
+      "Niğde": { "Altunhisar": ["Merkez"], "Bor": ["Bahçelievler", "Fatih"], "Çamardı": ["Merkez"], "Çiftlik": ["Merkez"], "Merkez": ["Efendibey", "Selçuklu", "Şahinali"], "Ulukışla": ["Merkez"] },
+      "Ordu": { "Akkuş": ["Merkez"], "Altınordu": ["Bahçelievler", "Durugöl", "Düzmahalle", "Şarkiye"], "Aybastı": ["Merkez"], "Çamaş": ["Merkez"], "Çatalpınar": ["Merkez"], "Çaybaşı": ["Merkez"], "Fatsa": ["Evkaf", "Yalıköy"], "Gölköy": ["Merkez"], "Gülyalı": ["Merkez"], "Gürgentepe": ["Merkez"], "İkizce": ["Merkez"], "Kabadüz": ["Merkez"], "Kabataş": ["Merkez"], "Korgan": ["Merkez"], "Kumru": ["Merkez"], "Mesudiye": ["Merkez"], "Perşembe": ["Merkez"], "Ulubey": ["Merkez"], "Ünye": ["Atatürk", "Kaledere"] },
+      "Osmaniye": { "Bahçe": ["Merkez"], "Düziçi": ["Merkez"], "Hasanbeyli": ["Merkez"], "Kadirli": ["Cengiz Topel", "Şehit Orhan Gök"], "Merkez": ["Faikefendi", "Rauf Bey", "Yıldırım Beyazıt"], "Sumbas": ["Merkez"], "Toprakkale": ["Merkez"] },
+      "Rize": { "Ardeşen": ["Merkez"], "Çamlıhemşin": ["Merkez"], "Çayeli": ["Eskipazar", "Yenipazar"], "Derepazarı": ["Merkez"], "Fındıklı": ["Merkez"], "Güneysu": ["Merkez"], "Hemşin": ["Merkez"], "İkizdere": ["Merkez"], "İyidere": ["Merkez"], "Kalkandere": ["Merkez"], "Merkez": ["Çarşı", "Müftü", "Piri Çelebi", "Tophane"] },
+      "Sakarya": { "Adapazarı": ["Çıracılar", "Güneşler", "Semerciler", "Yenicami"], "Akyazı": ["Merkez"], "Arifiye": ["Merkez"], "Erenler": ["Küpçüler", "Tabakhane"], "Ferizli": ["Merkez"], "Geyve": ["Merkez"], "Hendek": ["Merkez"], "Karapürçek": ["Merkez"], "Karasu": ["Merkez"], "Kaynarca": ["Merkez"], "Pamukova": ["Merkez"], "Sapanca": ["Merkez", "Kırkpınar"], "Serdivan": ["Arabacıalanı", "Beşköprü", "Esentepe", "Körfez"], "Söğütlü": ["Merkez"], "Taraklı": ["Merkez"] },
+      "Samsun": { "19 Mayıs": ["Merkez"], "Alaçam": ["Merkez"], "Asarcık": ["Merkez"], "Atakum": ["Camiikebir", "Denizevleri", "Körfez", "Mimar Sinan"], "Ayvacık": ["Merkez"], "Bafra": ["Fevzi Çakmak", "Kızılırmak"], "Canik": ["Gökçepınar", "Soğuksu"], "Çarşamba": ["Orta", "Yalı"], "Havza": ["Merkez"], "İlkadım": ["Fevzi Çakmak", "Hançerli", "Kadıköy", "Kışla"], "Kavak": ["Merkez"], "Ladik": ["Merkez"], "Salıpazarı": ["Merkez"], "Tekkeköy": ["Merkez"], "Terme": ["Merkez"], "Vezirköprü": ["Merkez"], "Yakakent": ["Merkez"] },
+      "Siirt": { "Aydınlar": ["Merkez"], "Baykan": ["Merkez"], "Eruh": ["Merkez"], "Kurtalan": ["Sümer", "Çarşı"], "Merkez": ["Bahçelievler", "Sakarya", "Tınaztepe"], "Pervari": ["Merkez"], "Şirvan": ["Merkez"] },
+      "Sinop": { "Ayancık": ["Merkez"], "Boyabat": ["Esentepe", "Yenimahalle"], "Dikmen": ["Merkez"], "Durağan": ["Merkez"], "Erfelek": ["Merkez"], "Gerze": ["Merkez"], "Merkez": ["Camikebir", "Karakum", "Korucuk"], "Saraydüzü": ["Merkez"], "Türkeli": ["Merkez"] },
+      "Sivas": { "Akıncılar": ["Merkez"], "Altınyayla": ["Merkez"], "Divriği": ["Merkez"], "Doğanşar": ["Merkez"], "Gemerek": ["Merkez"], "Gölova": ["Merkez"], "Gürün": ["Merkez"], "Hafik": ["Merkez"], "İmranlı": ["Merkez"], "Kangal": ["Merkez"], "Koyulhisar": ["Merkez"], "Merkez": ["Fatih", "Kılavuz", "Mehmet Akif Ersoy", "Yücelt"], "Suşehri": ["Merkez"], "Şarkışla": ["Merkez"], "Ulaş": ["Merkez"], "Yıldızeli": ["Merkez"], "Zara": ["Merkez"] },
+      "Şanlıurfa": { "Akçakale": ["Merkez"], "Birecik": ["Merkez"], "Bozova": ["Merkez"], "Ceylanpınar": ["Merkez"], "Eyyübiye": ["Akşemsettin", "Eyüpnebi", "Yenice"], "Halfeti": ["Merkez"], "Haliliye": ["Ahmet Yesevi", "Bağlarbaşı", "Devrent"], "Harran": ["Merkez"], "Hilvan": ["Merkez"], "Karaköprü": ["Akpiyer", "Atakent", "Çankaya"], "Siverek": ["Fırat", "Karakoyun"], "Suruç": ["Merkez"], "Viranşehir": ["Yeni", "Yenidoğan"] },
+      "Şırnak": { "Beytüşşebap": ["Merkez"], "Cizre": ["Cudi", "Nur", "Sur"], "Güçlükonak": ["Merkez"], "İdil": ["Merkez"], "Merkez": ["Bahçelievler", "Gündoğdu", "İsmetpaşa"], "Silopi": ["Başak", "Yeni"], "Uludere": ["Merkez"] },
+      "Tekirdağ": { "Çerkezköy": ["Atatürk", "Bağlık", "Fatih", "Fevzipaşa", "Gazi"], "Çorlu": ["Esentepe", "Hıdırağa", "Muhittin", "Omurca", "Reşadiye", "Şeyhsinan", "Zafer"], "Ergene": ["Ulaş", "Vakıflar", "Sağlık"], "Kapaklı": ["Atatürk", "Bahçelievler", "İsmetpaşa"], "Malkara": ["Camiatik", "Hacıevhat"], "Marmaraereğlisi": ["Camii", "Mürefte"], "Sarayı": ["Ayaspaşa", "Kapaklıdere"], "Süleymanpaşa": ["Aydoğdu", "Çiftlikönü", "Değirmenaltı", "Ertuğrul", "Hürriyet"], "Şarköy": ["Camiikebir", "Cumhuriyet"] },
+      "Tokat": { "Almus": ["Merkez"], "Artova": ["Merkez"], "Başçiftlik": ["Merkez"], "Erbaa": ["Fatih", "Yavuz Sultan Selim"], "Merkez": ["Esentepe", "Gazioğlu", "Kardelen"], "Niksar": ["Merkez"], "Pazar": ["Merkez"], "Reşadiye": ["Merkez"], "Sulusaray": ["Merkez"], "Turhal": ["Merkez"], "Yeşilyurt": ["Merkez"], "Zile": ["Merkez"] },
+      "Trabzon": { "Akçaabat": ["Darıca", "Söğütlü", "Yıldızlı"], "Araklı": ["Merkez"], "Arsin": ["Merkez"], "Beşikdüzü": ["Merkez"], "Çarşıbaşı": ["Merkez"], "Çaykara": ["Merkez"], "Dernekpazarı": ["Merkez"], "Düzköy": ["Merkez"], "Hayrat": ["Merkez"], "Köprübaşı": ["Merkez"], "Maçka": ["Merkez"], "Of": ["Merkez"], "Ortahisar": ["Akkaya", "Boztepe", "Çukurçayır", "Maraş", "Yenicuma"], "Sürmene": ["Merkez"], "Şalpazarı": ["Merkez"], "Tonya": ["Merkez"], "Vakfıkebir": ["Merkez"], "Yomra": ["Merkez"] },
+      "Tunceli": { "Çemişgezek": ["Merkez"], "Hozat": ["Merkez"], "Mazgirt": ["Merkez"], "Merkez": ["Alibaba", "Cumhuriyet", "Moğultay"], "Nazımiye": ["Merkez"], "Ovacık": ["Merkez"], "Pertek": ["Çarşı", "Yeni"], "Pülümür": ["Merkez"] },
+      "Uşak": { "Banaz": ["Corum", "Fatih"], "Eşme": ["Merkez"], "Karahallı": ["Merkez"], "Merkez": ["Atatürk", "Fatih", "İsmetpaşa", "Kemalöz"], "Sivaslı": ["Merkez"], "Ulubey": ["Merkez"] },
+      "Van": { "Bahçesaray": ["Merkez"], "Başkale": ["Merkez"], "Çaldıran": ["Merkez"], "Çatak": ["Merkez"], "Edremit": ["Ayrancı", "Eski Cami"], "Erciş": ["Atatürk", "Vanyolu"], "Gevaş": ["Merkez"], "Gürpınar": ["Merkez"], "İpekyolu": ["Bahçıvan", "Karakova", "Sıhke", "Şerefiye"], "Muradiye": ["Merkez"], "Özalp": ["Merkez"], "Saray": ["Merkez"], "Tuşba": ["İskele", "Kalecik", "Şemsibey"] },
+      "Yalova": { "Altınova": ["Merkez"], "Armutlu": ["Merkez"], "Çınarcık": ["Harmanlar", "Yenidoğan"], "Çiftlikköy": ["Merkez"], "Merkez": ["Bağlarbaşı", "Fevzi Çakmak", "İsmet Paşa", "Rüstem Paşa"], "Termal": ["Merkez"] },
+      "Yozgat": { "Akdağmadeni": ["Merkez"], "Aydıncık": ["Merkez"], "Boğazlıyan": ["Merkez"], "Çandır": ["Merkez"], "Çayıralan": ["Merkez"], "Çekerek": ["Merkez"], "Kadışehri": ["Merkez"], "Merkez": ["Aşağıçatak", "Bahçeşehir", "Medrese"], "Saraykent": ["Merkez"], "Sarıkaya": ["Merkez"], "Sefaatli": ["Merkez"], "Sorgun": ["Bahçelievler", "Mithatpaşa"], "Şefaatli": ["Merkez"], "Yenifakılı": ["Merkez"], "Yerköy": ["Merkez"] },
+      "Zonguldak": { "Alaplı": ["Merkez"], "Çaycuma": ["Merkez"], "Devrek": ["Merkez"], "Ereğli": ["Müftü", "Orhan Gazi"], "Gökçebey": ["Merkez"], "Kozlu": ["Fatih", "Kılıç"], "Merkez": ["Birlik", "İncivez", "Meşrutiyet", "Tepebaşı"] }
+    };
+
+    const products = [
+      {
+        id: 1,
+        name: "Oversized Polar Sweatshirt",
+        category: "Sweatshirt",
+        gender: "Erkek",
+        price: 899,
+        sizes: ["S", "M", "L", "XL"],
+        images: ["resimler/ön.jpg", "resimler/arka.jpg", "resimler/kol.jpg", "resimler/yaka.jpg", "resimler/kumaş.jpg"],
+        colors: [
+          { name: "Gri", images: ["resimler/ön.jpg", "resimler/arka.jpg", "resimler/kol.jpg", "resimler/yaka.jpg", "resimler/kumaş.jpg"] },
+          { name: "Siyah", images: ["resimler/siyah ön.jpg", "resimler/siyah arka.jpg", "resimler/siyah kol.jpg", "resimler/siyah yaka.jpg", "resimler/siyah kumaş.jpg"] }
+        ],
+        description: "%100 pamuklu, içi şardonlu kışlık.",
+        badge: "Çok Satan",
+        stockText: "Son 3 adet kaldı!"
+      },
+      {
+        id: 2,
+        name: "Kalın Kapüşonlu Fleece Hoodie",
+        category: "Kapüşonlu",
+        gender: "Erkek",
+        price: 1199,
+        sizes: ["S", "M", "L", "XL"],
+        images: ["resimler/siyah ön.jpg", "resimler/siyah arka.jpg", "resimler/siyah kol.jpg", "resimler/siyah yaka.jpg", "resimler/siyah kumaş.jpg"],
+        colors: [
+          { name: "Siyah", images: ["resimler/siyah ön.jpg", "resimler/siyah arka.jpg", "resimler/siyah kol.jpg", "resimler/siyah yaka.jpg", "resimler/siyah kumaş.jpg"] },
+          { name: "Gri", images: ["resimler/ön.jpg", "resimler/arka.jpg", "resimler/kol.jpg", "resimler/yaka.jpg", "resimler/kumaş.jpg"] }
+        ],
+        description: "Ağır gramajlı premium kış konforu.",
+        badge: "Sıcak Tutar",
+        stockText: "M Beden tükenmek üzere!"
+      },
+      {
+        id: 3,
+        name: "Kalın Kapüşonlu Kadın Fleece Hoodie",
+        category: "Kapüşonlu",
+        gender: "Kadın",
+        price: 749,
+        sizes: ["S", "M", "L", "XL"],
+        images: ["resimler/Kadın-gri-ön.jpg", "resimler/Kadın-gri-arka.jpg", "resimler/Kadın-gri-kol.jpg", "resimler/Kadın-gri-kumaş.jpg"],
+        colors: [
+          { name: "Gri", images: ["resimler/Kadın-gri-ön.jpg", "resimler/Kadın-gri-arka.jpg", "resimler/Kadın-gri-kol.jpg", "resimler/Kadın-gri-kumaş.jpg"] },
+          { name: "Siyah", images: ["resimler/Kadın-siyah-ön.jpg", "resimler/Kadın-siyah-arka.jpg", "resimler/Kadın-siyah-kol.jpg", "resimler/Kadın-siyah-kumaş.jpg"] }
+        ],
+        description: "Esnek bel bandı ve dökümlü paça.",
+        badge: "Yeni",
+        stockText: ""
+      },
+      {
+        id: 4,
+        name: "Kalın Kapüşonlu Kadın Fleece Hoodie",
+        category: "Kapüşonlu",
+        gender: "Kadın",
+        price: 749,
+        sizes: ["S", "M", "L", "XL"],
+        images: ["resimler/Kadın-siyah-ön.jpg", "resimler/Kadın-siyah-arka.jpg", "resimler/Kadın-siyah-kol.jpg", "resimler/Kadın-siyah-kumaş.jpg"],
+        colors: [
+          { name: "Siyah", images: ["resimler/Kadın-siyah-ön.jpg", "resimler/Kadın-siyah-arka.jpg", "resimler/Kadın-siyah-kol.jpg", "resimler/Kadın-siyah-kumaş.jpg"] },
+          { name: "Gri", images: ["resimler/Kadın-gri-ön.jpg", "resimler/Kadın-gri-arka.jpg", "resimler/Kadın-gri-kol.jpg", "resimler/Kadın-gri-kumaş.jpg"] }
+        ],
+        description: "Esnek bel bandı ve dökümlü paça.",
+        badge: "Yeni",
+        stockText: ""
+      },
+      {
+        id: 5,
+        name: "Kışlık Örgü Bere & Atkı Seti",
+        category: "Aksesuar",
+        gender: "Unisex",
+        price: 399,
+        sizes: ["Standart"],
+        images: ["resimler/bere1.jpg"],
+        colors: [
+          { name: "Siyah", images: ["resimler/bere1.jpg"] },
+          { name: "Beyaz", images: ["resimler/bere1.jpg"] }
+        ],
+        description: "Yün karışımlı yumuşak doku.",
+        badge: "Fırsat",
+        stockText: "Sınırlı Stok"
+      },
+      {
+        id: 6,
+        name: "Kışlık Polar Pembe Kadın Sweatshirt",
+        category: "Sweatshirt",
+        gender: "Kadın",
+        price: 599.99,
+        sizes: ["S", "M", "L", "XL"],
+        images: ["resimler/urun6_on.jpg", "resimler/urun6_arka.jpg", "resimler/urun6_kol.jpg", "resimler/urun6_yaka.jpg", "resimler/urun6_kumas.jpg"],
+        colors: [
+          { name: "Pembe", images: ["resimler/urun6_on.jpg", "resimler/urun6_arka.jpg", "resimler/urun6_kol.jpg", "resimler/urun6_yaka.jpg", "resimler/urun6_kumas.jpg"] }
+        ],
+        description: "%100 pamuklu, içi şardonlu kışlık.",
+        badge: "Fırsat",
+        stockText: "Yeni Ürün"
+      }
+    ];
+
+    const categories = ["Tümü", "Sweatshirt", "Kapüşonlu", "Eşofman", "Aksesuar"];
+    let cart = [];
+    let activeCategory = "Tümü";
+    let activeNavGender = "Tümü";
+    let currentUser = null;
+    let userAddresses = [];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderCategories();
+      applyFilters();
+      initCities();
+
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', () => applyFilters());
+      }
+
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id: "499516948002-o1rp6cbutpqrja0nlim8k08pc5ua5k85.apps.googleusercontent.com",
+          callback: handleCredentialResponse
+        });
+        google.accounts.id.renderButton(
+          document.getElementById("googleSignInBtn"),
+          { theme: "outline", size: "large", width: "360" }
+        );
+      };
+    });
+
+    function initCities() {
+      const citySelect = document.getElementById('addrCity');
+      if (!citySelect) return;
+      citySelect.innerHTML = '<option value="">Seçiniz</option>';
+      const cities = Object.keys(turkey81Data).sort();
+      cities.forEach(city => {
+        const opt = document.createElement('option');
+        opt.value = city;
+        opt.textContent = city;
+        citySelect.appendChild(opt);
+      });
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastText = document.getElementById('toastText');
+      toastText.textContent = message;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      toast.classList.add('opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('opacity-100');
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2000);
+    }
+
+    function onCityChange() {
+      const citySelect = document.getElementById('addrCity');
+      const districtSelect = document.getElementById('addrDistrict');
+      const neighborhoodSelect = document.getElementById('addrNeighborhood');
+      const selectedCity = citySelect.value;
+
+      districtSelect.innerHTML = '<option value="">İlçe Seçiniz</option>';
+      neighborhoodSelect.innerHTML = '<option value="">Önce İlçe Seçiniz</option>';
+
+      if (selectedCity && turkey81Data[selectedCity]) {
+        const districts = Object.keys(turkey81Data[selectedCity]).sort();
+        districts.forEach(district => {
+          const opt = document.createElement('option');
+          opt.value = district;
+          opt.textContent = district;
+          districtSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function onDistrictChange() {
+      const citySelect = document.getElementById('addrCity');
+      const districtSelect = document.getElementById('addrDistrict');
+      const neighborhoodSelect = document.getElementById('addrNeighborhood');
+      const selectedCity = citySelect.value;
+      const selectedDistrict = districtSelect.value;
+
+      neighborhoodSelect.innerHTML = '<option value="">Mahalle Seçiniz</option>';
+
+      if (selectedCity && selectedDistrict && turkey81Data[selectedCity][selectedDistrict]) {
+        const neighborhoods = turkey81Data[selectedCity][selectedDistrict].sort();
+        neighborhoods.forEach(neigh => {
+          const opt = document.createElement('option');
+          opt.value = neigh;
+          opt.textContent = neigh;
+          neighborhoodSelect.appendChild(opt);
+        });
+      }
+    }
+
+    function handleCredentialResponse(response) {
+      const responsePayload = parseJwt(response.credential);
+      currentUser = { 
+        name: responsePayload.name, 
+        email: responsePayload.email,
+        phone: "",
+        picture: responsePayload.picture
+      };
+      updateAccountUI();
+      toggleAuthModal();
+    }
+
+    function parseJwt(token) {
+      var base64Url = token.split('.')[1];
+      var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
+          return '%' + ('0' + c.charCodeAt(0).toString(16)).slice(-2);
+      }).join(''));
+      return JSON.parse(jsonPayload);
+    }
+
+    function toggleAuthModal() {
+      const modal = document.getElementById("authModal");
+      const isOpen = !modal.classList.contains("pointer-events-none");
+      if (isOpen) {
+        modal.classList.add("pointer-events-none", "opacity-0");
+        modal.classList.remove("opacity-100");
+      } else {
+        modal.classList.remove("pointer-events-none", "opacity-0");
+        modal.classList.add("opacity-100");
+      }
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById("loginForm");
+      const registerForm = document.getElementById("registerForm");
+      const loginBtn = document.getElementById("tabLoginBtn");
+      const registerBtn = document.getElementById("tabRegisterBtn");
+
+      if (tab === 'login') {
+        loginForm.classList.remove("hidden");
+        registerForm.classList.add("hidden");
+        loginBtn.className = "flex-1 pb-3 font-extrabold text-sm text-amber-400 border-b-2 border-amber-500 cursor-pointer";
+        registerBtn.className = "flex-1 pb-3 font-extrabold text-sm text-slate-400 border-b-2 border-transparent cursor-pointer";
+      } else {
+        loginForm.classList.add("hidden");
+        registerForm.classList.remove("hidden");
+        registerBtn.className = "flex-1 pb-3 font-extrabold text-sm text-amber-400 border-b-2 border-amber-500 cursor-pointer";
+        loginBtn.className = "flex-1 pb-3 font-extrabold text-sm text-slate-400 border-b-2 border-transparent cursor-pointer";
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value;
+      currentUser = { name: email.split('@')[0], email, phone: "" };
+      updateAccountUI();
+      toggleAuthModal();
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById("regName").value;
+      const email = document.getElementById("regEmail").value;
+      currentUser = { name, email, phone: "" };
+      updateAccountUI();
+      toggleAuthModal();
+    }
+
+    function updateAccountUI() {
+      const btnText = document.getElementById("accountBtnText");
+      if (currentUser) {
+        btnText.textContent = currentUser.name;
+      } else {
+        btnText.textContent = "Giriş Yap";
+      }
+    }
+
+    function handleAccountBtnClick() {
+      if (currentUser) {
+        const dropdown = document.getElementById('accountDropdown');
+        dropdown.classList.toggle('hidden');
+      } else {
+        toggleAuthModal();
+      }
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      updateAccountUI();
+      document.getElementById('accountDropdown').classList.add('hidden');
+    }
+
+    function openProfileModal() {
+      document.getElementById('accountDropdown').classList.add('hidden');
+      if (currentUser) {
+        document.getElementById('profileName').value = currentUser.name;
+        document.getElementById('profileEmail').value = currentUser.email;
+        document.getElementById('profilePhone').value = currentUser.phone || "";
+      }
+      const modal = document.getElementById("profileModal");
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.classList.add("opacity-100");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeProfileModal() {
+      const modal = document.getElementById("profileModal");
+      modal.classList.add("pointer-events-none", "opacity-0");
+      modal.classList.remove("opacity-100");
+    }
+
+    function saveProfileChanges() {
+      if (!currentUser) return;
+      const phoneInput = document.getElementById('profilePhone').value.trim();
+      if (!phoneInput) {
+        showToast("Cep telefonu alanı zorunludur!");
+        return;
+      }
+      currentUser.name = document.getElementById('profileName').value;
+      currentUser.phone = phoneInput;
+      updateAccountUI();
+      showToast("Kullanıcı bilgileriniz güncellendi.");
+      closeProfileModal();
+    }
+
+    function deleteAccount() {
+      if (confirm("Hesabınızı silmek istediğinize emin misiniz? Bu işlem geri alınamaz.")) {
+        currentUser = null;
+        userAddresses = [];
+        updateAccountUI();
+        closeProfileModal();
+        showToast("Hesabınız silindi.");
+      }
+    }
+
+    function openAddressModalMain() {
+      document.getElementById('accountDropdown').classList.add('hidden');
+      renderAddressList();
+      const modal = document.getElementById("addressModalMain");
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.classList.add("opacity-100");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAddressModalMain() {
+      const modal = document.getElementById("addressModalMain");
+      modal.classList.add("pointer-events-none", "opacity-0");
+      modal.classList.remove("opacity-100");
+    }
+
+    function openAddressAddModal() {
+      const modal = document.getElementById("addressAddModal");
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.classList.add("opacity-100");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closeAddressAddModal() {
+      const modal = document.getElementById("addressAddModal");
+      modal.classList.add("pointer-events-none", "opacity-0");
+      modal.classList.remove("opacity-100");
+    }
+
+    function handleSaveAddress(e) {
+      e.preventDefault();
+      const newAddr = {
+        id: Date.now(),
+        title: document.getElementById('addrTitle').value,
+        name: document.getElementById('addrName').value,
+        surname: document.getElementById('addrSurname').value,
+        phone: document.getElementById('addrPhone').value,
+        city: document.getElementById('addrCity').value,
+        district: document.getElementById('addrDistrict').value,
+        neighborhood: document.getElementById('addrNeighborhood').value,
+        text: document.getElementById('addrText').value
+      };
+      userAddresses.push(newAddr);
+      closeAddressAddModal();
+      renderAddressList();
+      e.target.reset();
+      showToast("Adresiniz başarıyla eklendi.");
+    }
+
+    function deleteAddress(id) {
+      userAddresses = userAddresses.filter(a => a.id !== id);
+      renderAddressList();
+    }
+
+    function renderAddressList() {
+      const container = document.getElementById('addressListContainer');
+      if (!container) return;
+
+      if (userAddresses.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-500 italic py-4 text-center">Henüz kayıtlı bir adresiniz bulunmuyor.</p>`;
+        return;
+      }
+
+      container.innerHTML = userAddresses.map(addr => `
+        <div class="bg-slate-950 border border-slate-800 p-3.5 rounded-2xl flex items-start justify-between gap-3">
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+              <span class="text-xs font-bold text-amber-400">${addr.title}</span>
+            </div>
+            <p class="text-xs text-slate-200 font-semibold">${addr.name} ${addr.surname} (${addr.phone})</p>
+            <p class="text-[11px] text-slate-400 mt-0.5">${addr.text}, ${addr.neighborhood} Mah., ${addr.district} / ${addr.city}</p>
+          </div>
+          <button type="button" onclick="deleteAddress(${addr.id})" class="text-slate-500 hover:text-rose-400 cursor-pointer p-1"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+        </div>
+      `).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function renderCategories() {
+      const container = document.getElementById("categoryFilters");
+      if (!container) return;
+
+      container.innerHTML = categories.map(cat => `
+        <button type="button" onclick="selectCategory('${cat}')" class="px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer ${activeCategory === cat ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/20' : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-slate-200'}">${cat}</button>
+      `).join('');
+    }
+
+    function selectCategory(cat) {
+      activeCategory = cat;
+      renderCategories();
+      applyFilters();
+    }
+
+    function selectGenderNav(gender) {
+      activeNavGender = gender;
+      const buttons = ["Tümü", "Erkek", "Kadın", "Unisex"];
+      buttons.forEach(g => {
+        const btn = document.getElementById(`nav-gen-${g}`);
+        if (btn) {
+          btn.className = (g === gender) ? "px-5 py-2 rounded-full transition-all bg-amber-500 text-slate-950 shadow-md cursor-pointer" : "px-5 py-2 rounded-full text-slate-400 hover:text-slate-100 transition-all cursor-pointer";
+        }
+      });
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const searchQuery = document.getElementById('searchInput')?.value.toLowerCase() || "";
+      const filtered = products.filter(p => {
+        const matchesCategory = activeCategory === "Tümü" || p.category === activeCategory;
+        const matchesSearch = p.name.toLowerCase().includes(searchQuery);
+        const matchesGender = activeNavGender === "Tümü" || p.gender === activeNavGender || p.gender === "Unisex";
+        return matchesCategory && matchesSearch && matchesGender;
+      });
+      renderProducts(filtered);
+    }
+
+    function renderProducts(filteredList = products) {
+      const grid = document.getElementById("productGrid");
+      if (!grid) return;
+
+      if (filteredList.length === 0) {
+        grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-500 font-semibold">Aradığınız kriterlere uygun ürün bulunamadı.</div>`;
+        return;
+      }
+
+      grid.innerHTML = filteredList.map(p => {
+        const mainImg = p.images[0];
+        const hoverImg = p.images[1] || p.images[0];
+        return `
+          <div class="bg-slate-900/60 border border-slate-800/80 rounded-2xl overflow-hidden hover:border-slate-700 transition-all group flex flex-col relative z-10">
+            <div onclick="openProductModal(${p.id})" class="relative aspect-square overflow-hidden bg-slate-950 cursor-pointer">
+              <img src="${mainImg}" alt="${p.name}" class="w-full h-full object-cover group-hover:opacity-0 transition-opacity duration-500 absolute inset-0">
+              <img src="${hoverImg}" alt="${p.name} Alt" class="w-full h-full object-cover opacity-0 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 absolute inset-0">
+              ${p.badge ? `<span class="absolute top-3 left-3 z-10 bg-amber-500/90 text-slate-950 font-bold text-[10px] uppercase px-2.5 py-1 rounded-md tracking-wider">${p.badge}</span>` : ''}
+              <span class="absolute top-3 right-3 z-10 bg-slate-950/80 border border-slate-800 text-amber-400 font-bold text-[10px] uppercase px-2 py-0.5 rounded-md">${p.gender}</span>
+              <span class="absolute bottom-3 right-3 z-10 bg-slate-950/70 text-slate-300 text-xs px-2.5 py-1 rounded-full backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity">İncele</span>
+            </div>
+            <div class="p-5 flex-1 flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between">
+                  <span class="text-xs text-amber-500 font-semibold tracking-wider uppercase">${p.category}</span>
+                  ${p.stockText ? `<span class="text-[10px] font-bold text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded border border-rose-500/20">${p.stockText}</span>` : ''}
+                </div>
+                <h3 onclick="openProductModal(${p.id})" class="text-base font-bold text-slate-100 mt-1 mb-2 cursor-pointer hover:text-amber-400 transition-colors">${p.name}</h3>
+                
+                <div class="mb-4">
+                  <div class="flex items-center justify-between mb-1.5">
+                    <label class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Beden Seçin:</label>
+                    <button type="button" onclick="openSizeChartModal()" class="text-[11px] text-amber-400 hover:underline flex items-center gap-1 font-medium z-20 relative cursor-pointer"><i data-lucide="ruler" class="w-3 h-3"></i> Beden Rehberi</button>
+                  </div>
+                  <div class="flex flex-wrap gap-1.5 relative z-20">
+                    ${p.sizes.map((size, index) => `
+                      <label class="cursor-pointer">
+                        <input type="radio" name="size-${p.id}" value="${size}" ${index === 0 ? 'checked' : ''} class="peer hidden">
+                        <span class="px-2.5 py-1 rounded-lg border border-slate-700/80 text-xs font-bold text-slate-300 peer-checked:bg-amber-500 peer-checked:text-slate-950 peer-checked:border-amber-500 transition-all inline-block">${size}</span>
+                      </label>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center justify-between pt-3 border-t border-slate-800/60 mt-2 relative z-20">
+                <span class="text-xl font-extrabold text-amber-400">${p.price} ₺</span>
+                <button type="button" onclick="addToCartWithSize(${p.id})" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl text-sm flex items-center gap-1.5 transition-colors cursor-pointer"><i data-lucide="plus" class="w-4 h-4"></i> Sepete Ekle</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function openProductModal(id) {
+      const p = products.find(item => item.id === id);
+      if (!p) return;
+      const modal = document.getElementById("productModal");
+      const content = document.getElementById("productModalContent");
+      window.activeModalProductId = id;
+      window.activeModalColorIndex = 0;
+      const initialImages = p.colors?.[0]?.images?.length ? p.colors[0].images : p.images;
+
+      content.innerHTML = `
+        <button type="button" onclick="closeProductModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-100 z-30 cursor-pointer p-2 bg-slate-950/50 rounded-full border border-slate-800"><i data-lucide="x" class="w-6 h-6"></i></button>
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+          <div class="md:col-span-6 flex flex-col gap-4">
+            <div class="aspect-[4/5] rounded-2xl overflow-hidden bg-slate-950 border border-slate-800/90 shadow-inner relative">
+              <img id="modalMainImg" src="${initialImages[0]}" class="w-full h-full object-cover">
+            </div>
+            <!-- Küçük Resim Şeridi -->
+            <div id="modalThumbnails" class="flex gap-2.5 overflow-x-auto pb-1 relative z-30">
+              ${initialImages.map((img, idx) => `
+                <button type="button" onclick="changeModalImage('${img}', this)" class="w-20 h-20 rounded-xl border-2 overflow-hidden cursor-pointer transition-all shrink-0 ${idx === 0 ? 'border-amber-500 scale-95 shadow-md' : 'border-slate-800'}"><img src="${img}" class="w-full h-full object-cover pointer-events-none"></button>
+              `).join('')}
+            </div>
+          </div>
+          <div class="md:col-span-6 flex flex-col justify-between h-full pt-2">
+            <div>
+              <h2 class="text-2xl sm:text-3xl font-black text-slate-100 mb-3">${p.name}</h2>
+              <p class="text-3xl font-black text-amber-400 mb-6">${p.price} ₺</p>
+              ${p.colors?.length ? `
+                <div class="mb-6">
+                  <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-3">RENK SEÇİN:</label>
+                  <div id="modalColorOptions" class="flex flex-wrap gap-2">
+                    ${p.colors.map((color, index) => `<button type="button" onclick="selectModalColor(${p.id}, ${index})" class="px-4 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${index === 0 ? 'border-amber-500 bg-amber-500 text-slate-950' : 'border-slate-700 bg-slate-950 text-slate-200'}">${color.name}</button>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+              <div class="mb-8">
+                <label class="block text-xs font-bold text-slate-200 uppercase tracking-wider mb-3">BEDEN SEÇİN:</label>
+                <div class="flex flex-wrap gap-2.5">
+                  ${p.sizes.map((size, index) => `
+                    <label class="cursor-pointer">
+                      <input type="radio" name="modal-size-${p.id}" value="${size}" ${index === 0 ? 'checked' : ''} class="peer hidden">
+                      <span class="px-5 py-2.5 rounded-xl border border-slate-700 text-sm font-bold text-slate-200 peer-checked:bg-amber-500 peer-checked:text-slate-950 peer-checked:border-amber-500 transition-all inline-block">${size}</span>
+                    </label>
+                  `).join('')}
+                </div>
+              </div>
+            </div>
+            <button type="button" onclick="addToCartFromModal(${p.id})" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-4 rounded-2xl flex items-center justify-center gap-2.5 shadow-lg shadow-amber-500/20 text-base cursor-pointer"><i data-lucide="shopping-bag" class="w-5 h-5"></i> Sepete Ekle</button>
+          </div>
+        </div>
+      `;
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.classList.add("opacity-100");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function selectModalColor(productId, colorIndex) {
+      const product = products.find(p => p.id === productId);
+      if (!product || !product.colors?.[colorIndex]) return;
+      window.activeModalColorIndex = colorIndex;
+      const color = product.colors[colorIndex];
+      const images = color.images?.length ? color.images : product.images;
+      
+      document.getElementById('modalMainImg').src = images[0];
+
+      const thumbContainer = document.getElementById('modalThumbnails');
+      if (thumbContainer) {
+        thumbContainer.innerHTML = images.map((img, idx) => `
+          <button type="button" onclick="changeModalImage('${img}', this)" class="w-20 h-20 rounded-xl border-2 overflow-hidden cursor-pointer transition-all shrink-0 ${idx === 0 ? 'border-amber-500 scale-95 shadow-md' : 'border-slate-800'}"><img src="${img}" class="w-full h-full object-cover pointer-events-none"></button>
+        `).join('');
+      }
+      
+      const options = document.querySelectorAll('#modalColorOptions button');
+      options.forEach((button, index) => {
+        button.className = `px-4 py-2.5 rounded-xl border-2 text-sm font-bold transition-all ${index === colorIndex ? 'border-amber-500 bg-amber-500 text-slate-950' : 'border-slate-700 bg-slate-950 text-slate-200'}`;
+      });
+    }
+
+    function changeModalImage(imgSrc, btnElement) {
+      document.getElementById('modalMainImg').src = imgSrc;
+      const allBtns = btnElement.parentElement.querySelectorAll('button');
+      allBtns.forEach(b => b.classList.remove('border-amber-500', 'scale-95'));
+      btnElement.classList.add('border-amber-500', 'scale-95');
+    }
+
+    function closeProductModal() {
+      const modal = document.getElementById("productModal");
+      if (modal) {
+        modal.classList.add("pointer-events-none", "opacity-0");
+        modal.classList.remove("opacity-100");
+      }
+    }
+
+    function openSizeChartModal() {
+      const modal = document.getElementById("sizeChartModal");
+      if (modal) {
+        modal.classList.remove("pointer-events-none", "opacity-0");
+        modal.classList.add("opacity-100");
+        if (window.lucide) lucide.createIcons();
+      }
+    }
+
+    function closeSizeChartModal() {
+      const modal = document.getElementById("sizeChartModal");
+      if (modal) {
+        modal.classList.add("pointer-events-none", "opacity-0");
+        modal.classList.remove("opacity-100");
+      }
+    }
+
+    function addToCartFromModal(id) {
+      const selectedSizeInput = document.querySelector(`input[name="modal-size-${id}"]:checked`);
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+      const selectedSize = selectedSizeInput ? selectedSizeInput.value : product.sizes[0];
+      const selectedColor = product.colors?.[window.activeModalColorIndex || 0] || null;
+      const selectedImages = selectedColor?.images?.length ? selectedColor.images : product.images;
+      const colorName = selectedColor?.name || "Belirtilmedi";
+      
+      const existing = cart.find(item => item.id === id && item.selectedSize === selectedSize && item.selectedColor === colorName);
+      if (existing) { existing.quantity += 1; } 
+      else { cart.push({ ...product, image: selectedImages[0], selectedColor: colorName, selectedSize, quantity: 1 }); }
+
+      updateCartUI();
+      closeProductModal();
+      showToast("Ürün sepete eklendi!");
+    }
+
+    function addToCartWithSize(id) {
+      const product = products.find(p => p.id === id);
+      if (!product) return;
+      const selectedSizeInput = document.querySelector(`input[name="size-${id}"]:checked`);
+      const selectedSize = selectedSizeInput ? selectedSizeInput.value : product.sizes[0];
+      const defaultColor = product.colors?.[0] || null;
+      const defaultImages = defaultColor?.images?.length ? defaultColor.images : product.images;
+      const colorName = defaultColor?.name || "Belirtilmedi";
+      
+      const existing = cart.find(item => item.id === id && item.selectedSize === selectedSize && item.selectedColor === colorName);
+      if (existing) { existing.quantity += 1; } 
+      else { cart.push({ ...product, image: defaultImages[0], selectedColor: colorName, selectedSize, quantity: 1 }); }
+
+      updateCartUI();
+      showToast("Ürün sepete eklendi!");
+    }
+
+    function updateQuantity(id, selectedSize, selectedColor, change) {
+      const item = cart.find(i => i.id === id && i.selectedSize === selectedSize && i.selectedColor === selectedColor);
+      if (!item) return;
+      item.quantity += change;
+      if (item.quantity <= 0) {
+        cart = cart.filter(i => !(i.id === id && i.selectedSize === selectedSize && i.selectedColor === selectedColor));
+      }
+      updateCartUI();
+    }
+
+    function removeItem(id, selectedSize, selectedColor) {
+      cart = cart.filter(i => !(i.id === id && i.selectedSize === selectedSize && i.selectedColor === selectedColor));
+      updateCartUI();
+    }
+
+    function updateCartUI() {
+      const badge = document.getElementById("cartBadge");
+      const cartItemsPage = document.getElementById("cartItemsPage");
+      const cartTotalPage = document.getElementById("cartTotalPage");
+      const shippingBanner = document.getElementById("shippingBanner");
+      const shippingText = document.getElementById("shippingText");
+
+      const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+      const totalPrice = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      if (badge) badge.textContent = totalItems;
+      if (cartTotalPage) cartTotalPage.textContent = `${totalPrice} ₺`;
+
+      const freeShippingLimit = 1500;
+      if (totalPrice >= freeShippingLimit) {
+        shippingBanner.className = "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold py-3 px-5 rounded-2xl mb-6 flex items-center gap-2";
+        shippingText.innerHTML = "🎉 Tebrikler! Kargonuz **Ücretsiz**!";
+      } else {
+        const diff = freeShippingLimit - totalPrice;
+        shippingBanner.className = "bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-bold py-3 px-5 rounded-2xl mb-6 flex items-center gap-2";
+        shippingText.innerHTML = `Kargo bedava için sepetinize **${diff} TL** daha ürün ekleyin!`;
+      }
+
+      if (!cartItemsPage) return;
+
+      if (cart.length === 0) {
+        cartItemsPage.innerHTML = `<div class="bg-slate-900 border border-slate-800 rounded-3xl text-center py-16 text-slate-500 space-y-3"><i data-lucide="shopping-bag" class="w-12 h-12 mx-auto text-slate-700"></i><p class="font-semibold">Sepetiniz henüz boş.</p></div>`;
+      } else {
+        cartItemsPage.innerHTML = cart.map(item => `
+          <div class="flex items-center justify-between gap-4 bg-slate-900 p-4 rounded-2xl border border-slate-800">
+            <div class="flex items-center gap-4">
+              <img src="${item.image}" alt="${item.name}" class="w-20 h-20 object-cover rounded-xl border border-slate-800">
+              <div>
+                <h4 class="text-sm font-bold text-slate-100">${item.name}</h4>
+                <p class="text-xs text-slate-400 mt-1">Renk: <span class="text-amber-400 font-bold">${item.selectedColor || "Belirtilmedi"}</span> | Beden: <span class="text-amber-400 font-bold">${item.selectedSize}</span></p>
+                <p class="text-sm font-black text-amber-400 mt-1">${item.price} ₺</p>
+              </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <div class="flex items-center gap-1 bg-slate-950 border border-slate-800 rounded-xl p-1">
+                <button type="button" onclick="updateQuantity(${item.id}, '${item.selectedSize}', '${item.selectedColor || 'Belirtilmedi'}', -1)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-100 font-bold cursor-pointer">-</button>
+                <span class="text-xs font-bold w-6 text-center text-slate-200">${item.quantity}</span>
+                <button type="button" onclick="updateQuantity(${item.id}, '${item.selectedSize}', '${item.selectedColor || 'Belirtilmedi'}', 1)" class="w-7 h-7 flex items-center justify-center text-slate-400 hover:text-slate-100 font-bold cursor-pointer">+</button>
+              </div>
+              <button type="button" onclick="removeItem(${item.id}, '${item.selectedSize}', '${item.selectedColor || 'Belirtilmedi'}')" class="text-slate-500 hover:text-rose-400 cursor-pointer p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function showCartView() {
+      document.getElementById("mainView").classList.add("hidden");
+      document.getElementById("cartView").classList.remove("hidden");
+      updateCartUI();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showMainView() {
+      document.getElementById("cartView").classList.add("hidden");
+      document.getElementById("mainView").classList.remove("hidden");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function completeCheckout() {
+      if (cart.length === 0) {
+        showToast("Sepetinizde ürün bulunmamaktadır!");
+        return;
+      }
+
+      const methodInput = document.querySelector('input[name="paymentMethod"]:checked');
+      const method = methodInput ? methodInput.value : 'cc';
+      const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+
+      if (method === 'cc') {
+        openPaytrModal(total);
+      } else if (method === 'cod') {
+        showToast("Siparişiniz kapıda ödeme ile alındı!");
+        cart = [];
+        updateCartUI();
+        showMainView();
+      } else if (method === 'whatsapp') {
+        const phone = "905415365972";
+        let msg = "Merhaba! VORTEX STREETWEAR sitenizden IBAN ile ödeme yaparak şu siparişi vermek istiyorum:\n\n";
+        cart.forEach((item, index) => {
+          msg += `${index + 1}. *${item.name}* (Renk: ${item.selectedColor}, Beden: ${item.selectedSize}, Adet: ${item.quantity}) - ${item.price * item.quantity} ₺\n`;
+        });
+        msg += `\nToplam: ${total} ₺. IBAN bilgilerini alabilir miyim?`;
+        window.location.href = `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(msg)}`;
+      }
+    }
+
+    function openPaytrModal(totalAmount) {
+      const modal = document.getElementById("paytrModal");
+      const container = document.getElementById("paytrContainer");
+      if (!modal || !container) return;
+      
+      container.innerHTML = `
+        <div class="p-6 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <div class="w-8 h-8 bg-amber-500 rounded-lg flex items-center justify-center font-black text-slate-950 text-sm">P</div>
+              <div>
+                <h4 class="text-sm font-bold text-slate-100">PayTR Sanal POS</h4>
+                <p class="text-[10px] text-slate-400">Mağaza No: ${paytrConfig.merchant_id} (Test Modu)</p>
+              </div>
+            </div>
+            <span class="text-amber-400 font-black text-lg">${totalAmount} ₺</span>
+          </div>
+
+          <form onsubmit="handlePaytrSubmit(event)" class="space-y-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Kart Üzerindeki İsim</label>
+              <input type="text" required placeholder="Yüksel Rıdvan Selen" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Kart Numarası</label>
+              <input type="text" required maxlength="19" placeholder="4309 56** **** ****" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Son Kullanma (Ay/Yıl)</label>
+                <input type="text" required maxlength="5" placeholder="12/28" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">CVC / CVV</label>
+                <input type="password" required maxlength="3" placeholder="999" class="w-full bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-amber-500">
+              </div>
+            </div>
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black py-3.5 rounded-xl transition-all cursor-pointer text-xs mt-2 shadow-lg shadow-emerald-500/20">
+              Ödemeyi Güvenle Tamamla
+            </button>
+          </form>
+        </div>
+      `;
+      
+      modal.classList.remove("pointer-events-none", "opacity-0");
+      modal.classList.add("opacity-100");
+      if (window.lucide) lucide.createIcons();
+    }
+
+    function closePaytrModal() {
+      const modal = document.getElementById("paytrModal");
+      if (modal) {
+        modal.classList.add("pointer-events-none", "opacity-0");
+        modal.classList.remove("opacity-100");
+      }
+    }
+
+    function handlePaytrSubmit(e) {
+      e.preventDefault();
+      showToast("Ödemeniz PayTR üzerinden başarıyla onaylandı!");
+      cart = [];
+      updateCartUI();
+      closePaytrModal();
+      showMainView();
+    }
+  </script>
+</body>
+</html>
